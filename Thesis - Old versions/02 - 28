@@ -1,0 +1,2328 @@
+\documentclass[a4paper,12pt]{tesiinfo}
+%\documentclass[a4paper,12pt,dvipdfm]{tesiinfo}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{tabularx}
+\usepackage[english]{babel}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage[utf8x]{inputenc} %MAYBE enables to use \phi
+
+%FROM UNI - NOT INCLUDED IN BASIC COMMANDS
+\usepackage{fncychap}
+
+%ADDS SYMBOLS FOR MATH OPERATIONS: CEIL and FLOOR
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+%EQUISPACES THE FRACTIONS
+\usepackage{multicol}
+\usepackage{fixmath}
+\newcommand\ddfrac[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+
+%DISPLAY IMAGES CORRECTLY
+\usepackage[export]{adjustbox}
+\graphicspath{ {Images/} }
+\usepackage{float}
+
+%PSEUDO ALGORITMI
+\usepackage{algorithm}
+\usepackage{algpseudocode} 
+
+
+%\usepackage[export]{algorithm}
+%\usepackage[export]{algorithmic}
+%\usepackage{caption}
+%\newlength\myindent
+%\setlength\myindent{2em}
+%\newcommand\bindent{%
+%%  \setlength{\itemindent}{\myindent}
+%  \addtolength{\algorithmicindent}{\myindent}
+%}
+%\newcommand\eindent{\endgroup}
+
+%FOOTNOTES - FONT SIZE DECREASED. Non usato...
+%\usepackage{lmodern}
+
+%9pt \`e la dimensione del font footnote
+%11pt \`e la spaziatura. Se impostato a <9pt=troppo piccolo, se >12pt= troppo grande
+\renewcommand{\footnotesize}{\fontsize{9pt}{11pt}\selectfont}
+
+%Permette di fare citazioni multiple dalla bibliografia
+%Fonte: https://texblog.org/2007/05/28/mulitple-reference-citation/
+\usepackage{cite}
+
+%Imposta 9 simboli diversi per creare le note. Cos\`i evitiamo di confondere "le note" con "la notazione usata". Tuttavia non sembrano "professionali" o adatti ad una tesi e sono in numero limitati a 9 per capitolo (cambiare capitolo resetta il contatore dei simboli).
+%1 - *
+%2 - †
+%3 - ‡
+%4 - §
+%5 - ¶
+%6 - ||
+%7 - ∗∗
+%8 - ††
+%9 - ‡‡
+%\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\renewcommand{\thefootnote}{\Roman{footnote}}
+
+%Protocolli Alice-Bob a due colonne
+\usepackage{booktabs}
+
+%BOH
+\hypersetup{final}
+
+%Per mettere liste con a), b) ecc
+\usepackage{enumitem}
+
+%Inserire pagine bianche con il comando \afterpage{\blankpage}
+\usepackage{afterpage}
+
+%Inserire testi in greco 
+%Fonte: https://tex.stackexchange.com/questions/69901/how-to-typeset-greek-letters
+%Usa: \textgreek{testo che verrà COMPILATO in lettere greche}
+\usepackage[LGR,T1]{fontenc}
+\newcommand{\textgreek}[1]{\begingroup\fontencoding{LGR}\selectfont#1\endgroup}
+
+%Inserire teoremi e definizioni
+%Fonte: https://www.overleaf.com/learn/latex/Theorems_and_proofs
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{group law}{Group Law}[section]
+%
+%
+\newtheorem{ecdlp}{ECDLP}[section]
+%
+%
+\newtheorem{definition}{Definition}[section]
+%
+%
+\newtheorem{theorem}{Theorem}[section]
+
+%Aggiunge linea orizzontale in begin{algorithm} tramite \algrule
+%Fonte: https://tex.stackexchange.com/questions/52456/horizontal-line-in-algorithmic-environment
+\newcommand{\algrule}[1][.2pt]{\par\vskip.5\baselineskip\hrule height #1\par\vskip.5\baselineskip}
+
+%Permette cicli Do-While
+%Fonte: https://tex.stackexchange.com/questions/115709/do-while-loop-in-pseudo-code
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+%Disabilita la numerazione delle righe negli algoritmi tramite comando \NoNumber
+%Fonte: http://www.phy.ohio.edu/~hadizade/blog_files/latex_algorithm.html
+\def\NoNumber#1{{\def\alglinenumber##1{}\State #1}\addtocounter{ALG@line}{-1}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+
+
+\titolo{SIDH-based Oblivious Transfer - A Post-Quantum cryptographic protocol}
+\laureando{Marco Carolla}
+\relatore{Riccardo Aragona}
+\setcorrelatoreuno
+\correlatoreuno{Federico Pintore}
+\annoaccademico{2019-2020}
+
+\begin{document}
+
+\allowdisplaybreaks
+
+%\maketitle %Aggiunge la pagina iniziale dell'università
+\contentspage %Aggiunge l'indice
+
+%\pagenumbering{Roman}
+%\listoffigures
+%\listoftables
+%\pagenumbering{arabic}
+
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\chapter{Introduction}
+The word ``\textit{cryptography}'' derives from the Greek word \textgreek{$\kappa$ruptòs}, \textit{kryptos}, meaning hidden. Its origin is usually dated back to 2000 B.C., and associated with the Egyptian practice of hieroglyphics which full meaning was only known to an elite few.
+\\
+Formally, cryptography is the science of protecting information exchanged by two or more parties. In the last decades, it has advanced exponentially by taking advantage of the most developed formalisations and by relying on hard mathematical problems for security. Its algorithms are designed around computational complexity assumptions: it is theoretically possible to break a cryptosystem but it is infeasible in practice due to excessively long running times. These schemes are therefore said computationally secure.
+\\
+\\
+\indent Introduced in the mid 19-th century, modern cryptography is a wider field than classical cryptography since it also offers new additional properties vital to modern communications that can be summed up as follows: 
+\begin{itemize}
+    \item Authenticity - ensures that the information comes from the source it is claimed to be from;
+    \item Confidentiality - ensures that the information is not made available or disclosed to unauthorised individuals, entities, or processes. This is the only property targeted also by classical cryptography;
+    \item Integrity - ensures the information sent is exactly the same information received;
+    %\item Non Repudiation - provides proof of the integrity and origin of transmitted information.
+\end{itemize}
+In modern cryptography, symmetric-key and public-key encryption schemes are the best known and world-wide used. The symmetric-key algorithms make use of a single key to both encrypt and decrypt messages. This key is shared by the communicating parties hence the name symmetric. An example is the Advanced Encryption Standard (AES), designed in 1997 to supersede its predecessor DES in terms of both efficiency and security. More on this protocol can be found in \cite{aes libro}.
+\\
+public-key encryption schemes use a pair of keys: the public key serves to encrypt messages, the private one to decrypt them. These special algorithms are also named asymmetric since encryption and decryption keys are different and not shared by the parties. 
+\\
+These schemes are commonly implemented in a 2-parties version in which the users Alice and Bob want to communicate without revealing their messages' content to others. Many protocols have been proposed to this purpose: RSA \cite{rsa libro} is the most spread algorithm \cite{rsa piu usato di ecc}, while Elliptic Curve Cryptography (ECC) \cite{ecc libro} provides the most recent and efficient schemes. 
+\\
+\\
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%\section{Quantum Computers}
+In parallel with cryptography's evolution, in 1982 Richard Feynman observed that simulating quantum physics on classical computers seemed an intractable task \cite{PQC general}. He then followed up by conjecturing that physical devices relying on quantum phenomena would have been good candidates for simulating quantum mechanics. Soon after, David Deutsch in \cite{libro deutsch quantum} formalised the notion of quantum Turing machine, or universal quantum computer: it can simulate any quantum mechanical process with small overhead and independently of the substrate. 
+\\
+The basic idea behind a universal quantum computer is to exploit quantum bits, or qubits for short. As opposed to binary bits, qubits can achieve additional states in between the two binary states. These are named superposition of the digital states. A full treatment about quantum computers is beyond the scope of this thesis but a curious reader can refer to \cite{PQC schemes, PQC general, PQC development}.
+\\
+It is natural wondering about whether quantum computers could solve classical computational problems faster than classical computers. To this question Shor answered in 1994 with a paper \cite{Shor's algo} in which he presented polynomial-time quantum algorithms to solve the integer factorisation and discrete logarithm problems for which no efficient classical algorithms exist. The impact on modern public-key cryptography is dramatic: large enough quantum computers will break factorisation-based cryptosystems, such as RSA, as well as cryptosystems based on the discrete logarithm problem, such as elliptic curve cryptosystems.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{Shor's algorithm}
+Theorised in 1994, Shor's algorithm is one  of the most important for post-quantum cryptography. %By making use of a quantum computer, Shor's algorithm can efficiently solve both the integer factorisation and the discrete logarithm problem. 
+\\
+The idea behind Shor’s algorithm \cite{PQC development, Shor's algo} is to utilise quantum computing to compare the phases of prime numbers ``represented as sinus waves'' to factorise big integers. Using number theory, the problem of integer factorisation can be converted into a search for the period of a really long sequence, or rather, the length at which a sequence repeats itself. Then this periodic pattern is run through a quantum computer which works as a computational interferometer creating an interference pattern. This will output the period, which can be processed using a classical computer, finally being able to factorise the initially given number.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{Post-Quantum Cryptography}
+With the term ``\textit{Post-quantum cryptography}'' we refer to the cryptography's branch aiming at protecting information from both quantum and classical attacks, as well as to the collection of classical schemes that accomplish this task. Unfortunately, the transition to post-quantum cryptography is not cost-free. The hard problems exploited by post-quantum cryptography, except for hash inversion, have been studied less than integer factorisation and the discrete logarithm problem. Consequently a post-quantum hard problem inevitably conveys a lighter security assurance compared to a classic alternative. The reason is due to the greater potential of future improvements on quantum attacks. Additionally, many of the hard problems that hold promise of resisting attacks from quantum computers require cryptosystems with far greater memory and bandwidth impeding their adoption for low-cost devices.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{NIST's Standardisation Competition}
+\label{nist challenge section}
+Over the last decade there has been an intense research effort to find hard mathematical problems that
+would be at the same time quantum resistant and could be used to build new efficient cryptosystems.
+\\
+The above mentioned effort was also triggered by ``\textit{The Post-Quantum-Cryptography Standardization Challenge}'' which is a competition started by the National Institute of Standards and Technology (NIST) in April 2016 accepting proposals for post-quantum protocols. It entered in the first evaluation stage in November 2017 when NIST stopped accepting new algorithms for consideration. On 30 January 2019, the project went into the second evaluation stage, said \textit{Round 2}, with NIST announcing 26 out of 69 original submissions as final competitors. This round may take up to 18 months before completion, after which there may be a third round and only then official standard algorithms will be chosen.
+\\
+The final algorithms will be rated into five different levels, summarised in the table below: 
+\\
+\begin{center}
+    \begin{tabularx}{\textwidth}{ c | X | c }
+         Quantum Level & \multicolumn{1}{c|}{Security} & Reference protocol\\
+         \hline
+         \hline
+         I & Comparable to or greater than that of a block cipher with a 128-bit key against an exhaustive key search & AES128\\
+         \hline
+         II & Comparable to or greater than that of a 256-bit hash function against a collision search & SHA256\\
+         \hline
+         III & Comparable to or greater than that of a block cipher with a 192-bit key against an exhaustive key search & AES192\\
+         \hline
+         IV & Comparable to or greater than that of a 384-bit hash function against a collision search & SHA384\\
+         \hline
+         V & Comparable to or greater than that of a block cipher with a 256-bit key against an exhaustive key search & AES256\\
+    \end{tabularx}
+    \\
+\end{center}
+%
+%
+%
+As a final note, most published post-quantum schemes can be divided into the following families \cite{PQC schemes}:
+\begin{itemize}
+    \item Hash-based cryptography (e.g. Merkle’s hash-tree signature system \cite{m1});
+    \item Multivariate cryptography (e.g. HFE signature scheme \cite{m2});
+    \item Lattice-based cryptography (e.g. NTRU encryption scheme \cite{l1});
+    \item Code-based cryptography (e.g. McEliece encryption scheme \cite{m4}, Niederreiter encryption scheme \cite{m3}).
+\end{itemize}
+A new family, called isogeny-based cryptography, recently originated and it is the central point of this thesis. 
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{This Thesis}
+In this thesis we want to present a C implementation of a post-quantum protocol introduced in \cite{paper seedot} by Vanessa Vitse. The proposed algorithm relies on the supersingular isogeny problem, which is supposed to be quantum resistant, for its security.%, it exploits a zero knowledge protocol to exchange some data between the parties without revealing unnecessary information.
+\\
+By implementing this protocol first we reiterate that classical computers are central in post-quantum cryptography or, viceversa, quantum computers are not compulsory when implementing post-quantum algorithms. Most importantly we adapted an open source library to produce the first public implementation, as far as our knowledge goes, of the above mentioned algorithm. This thesis is organised as follows. 
+\\
+\\
+In chapter \ref{chapter ECC} we will introduce elliptic curve cryptography providing a brief but exhaustive overview on elliptic curves and isogenies, among other topics. Whenever possible we will present examples. Chapter \ref{chapter seedot} is the \textit{theoretical core} of this thesis since it focuses on two cryptographic protocols, see Sections \ref{section sidh}, \ref{section ot}, which can be used in symbiosis to create a third scheme, see Section \ref{section seedot}. We also supply a thorough security analysis of the latter before jumping to Chapter \ref{chapter implementation}. This chapter is our \textit{practical core}: there will be a full commentary on the implementation of the SIDH-based OT protocol from Section \ref{section seedot}.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\chapter{Elliptic Curve Cryptography}
+\label{chapter ECC}
+Elliptic Curve Cryptography (ECC) is an alternative to RSA-based public-key schemes based on the mathematics of elliptic curves. Cryptographic algorithms within ECC require elliptic curves over finite fields and provide the same security offered by other public-key schemes while requiring much smaller keys. ECC main applications fall in the area of encryption and key-exchange, but it can also be used in digital signatures, pseudo-random number generators and many others.
+\\
+ECC security lies on the Elliptic Curve Discrete Logarithm Problem (ECDLP) which will be discussed in the following section after a brief introduction on elliptic curves to familiarise with them.
+%
+%
+%
+%
+%%
+%
+%
+%
+%
+%
+%
+\section{Elliptic Curves}
+An elliptic curve \cite{ecc formula base} is a cubic curve defined over a field $\mathbb{K}$ and having a specified point $\mathcal{O}$. 
+%REMoved
+% The curve has then a projective form described in equation \ref{EC proiettiva estesa} called Tate-Weierstrass extended form:
+% \begin{gather}
+% Y^{2}Z + a_1XYZ + a_3YZ^2 =X^3 + a_2X^2Z + a_4XZ^2 + a_6Z^3
+% \label{EC proiettiva estesa}
+% \end{gather}
+%
+%
+%
+Whenever the field $\mathbb{K}$ has characteristic \textit{char}($\mathbb{K}$) $\ne \{2, 3\}$, an elliptic curve can be defined as the locus of points satisfying an affine equation which comes with a smoothness condition:
+\begin{gather}
+    \textit{Weierstrass equation: }
+    \begin{cases}
+        y^2 = x^3 + ax+b\\
+        4a^3 \ne 27b^2
+    \end{cases}
+    \label{EC affine}
+\end{gather}
+together with the point at infinity $\mathcal{O}$ as expressed in \cite{ottimo su teoria EC}.
+\\
+%
+%
+%
+Points of an elliptic curve $E$ form a group $(E, +)$ \cite{appunti inutili se non per punti EC uguale gruppo, ottimo per puntiGruppo e Weil pairing}. 
+A rigorous definition of the addition $+$ can be found in \cite{ottimo su teoria EC}:
+\begin{definition}{\textbf{Group Law}}
+    Let $P,Q$ be two points on the elliptic curve $E$, let $L$ be the line through $P$ and $Q$ (if $P = Q$, let $L$ be the tangent line to $E$ at $P$), and let $R$ be the third point of intersection of $L$ with $E$. Let now $L'$ be the line through $R$ and $\mathcal{O}$. Then $L'$ intersects the curve $E$ at $R$, $\mathcal{O}$, and a third point. We denote that third point by $P + Q$.
+\end{definition}
+%
+%
+%
+%
+%
+We now briefly list some of the most important properties for an elliptic curve from a cryptographic point of view:
+\begin{itemize}
+%
+    \item The point addition allows to sum two different points $P=(x_P, y_P)$ and $Q=(x_Q, y_Q)$ of the curve obtaining a third point $R=(x_R, y_R) = P+Q$ computed as follows:
+        \begin{align*}
+            \begin{cases}
+                m = \ddfrac{y_P - y_Q}{x_P - x_Q}\\
+                x_R = m^2 - (x_P + x_Q)\\
+                y_R = m(x_P - x_R)-y_P
+            \end{cases}
+        \end{align*}
+%
+    \item The above formula cannot be used for the Point Doubling, i.e. for summing $P$, $Q$ when $P=Q$. In that case the line's slope coefficient $m$ changes to $m = \ddfrac{3x^2+a}{2y}$;
+%
+    \item The points of a curve $E$ form an \textit{abelian group} \cite{ottimo per puntiGruppo e Weil pairing} meaning that the group law is commutative, hence $R = P+Q = Q+P$ for every $P, Q \in E$;
+%
+    \item The operation of adding a point $P$ to itself $k$ times is written as $[k]P$, or simply $kP$, and sometimes called scalar multiplication (between the scalar $k$ and the point $P$);
+%
+    \item Given a point $P$ of an elliptic curve, its order is the minimum number $k$ such that $[k]P = \mathcal{O}$. All the points $\{G, [2]G, [3]G, \ldots , [k-1]G, [k]G\}$ a subgroup denoted as $\left \langle G \right \rangle$ and having cardinality $k$;
+%
+    \item An elliptic curve, defined over a finite field $\mathbb{F}_p$ with $p$ prime greater than 3, having $p+1$ points with coefficients in $\mathbb{F}_p$, is said \textit{Supersingular}, otherwise is said Ordinary. The set of all the points of the elliptic curve $E$ having coefficients in $\mathbb{F}_p$ is denoted by $E(\mathbb{F}_p)$ and it is called the set of rational points. $E(\mathbb{F}_p)$ is a subgroup of $(E, +)$;
+%
+    \item Given the elliptic curve $E: y^2 = x^3 + ax+b$ over a field with characteristic different than 2 and 3, its j-invariant is defined as follows:
+    \begin{gather*}
+        j(E) = 1728 \cdot \ddfrac{4a^3}{4a^3 + 27b^2}
+    \end{gather*}
+    The j-invariant is an important identifier for an elliptic curve and, for this reason, it is commonly used in practical ECC implementations.
+\end{itemize}
+At this point we can introduce the concept of Elliptic Curve Discrete Logarithm Problem (ECDLP). This problem is considered hard for classical computers, an assumption upon which the security of ECC schemes is based on:
+\begin{definition}{\textbf{ECDLP}}
+Given an elliptic curve $E$ and two of its points $G$, $P$, find an integer $k$ ``if it exists'' such that $P = [k]G$.
+\end{definition}
+%
+%
+%
+In figure \ref{CommonEC} we can see two common affine representations of elliptic curves defined over the field $\mathbb{R}$: on the left $a=-3$, $b=1$, on the right $a=-2$, $b=2$.
+\begin{figure}[H]
+ \includegraphics[width=\textwidth,center]{CommonEC}
+ \caption{Two affine elliptic curves}
+ \label{CommonEC}
+\end{figure}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{Important concepts}
+\label{sec Important concepts}
+In this section many fundamental mathematical concepts that will be used in the next chapters are listed. Where not better specified, the reader may find additional information in \cite{ecc formula base, ottimo su teoria EC, appunti inutili se non per punti EC uguale gruppo, ottimo per puntiGruppo e Weil pairing}.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{m-torsion groups}
+\label{section m-torsion groups}
+Given an elliptic curve $E$ defined over a field $K$ with characteristic $p$ and an integer $m \ne 0$, the $m$-torsion group $E[m]$ is defined as follows: 
+\begin{gather*}
+   \{P\in E \mid [m]P=\mathcal{O}\}
+\end{gather*}
+%
+%
+%
+%
+This set forms a subgroup for which holds:
+\begin{gather*}
+    E[m] \simeq (\mathbb{Z}/m\mathbb{Z})^2 \text{ if } p \nmid m
+\end{gather*}
+Otherwise in case we have  $p \mid m$ then: 
+\begin{align*}
+    E[p^i] \simeq 
+    \begin{cases}
+       \mathbb{Z}/p^i\mathbb{Z} & \forall i \ge 0 \text{ if $E$ is Ordinary}\\
+       \{\mathcal{O}\} & \forall i \ge 0 \text{ if $E$ is Supersingular}
+    \end{cases}
+\end{align*}
+As a consequence of the above, a supersingular curve has no points of order $p$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Isomorphic curves}
+Given two groups $(G, \circ)$, $(H, *)$, the function $\phi : G \rightarrow H$ is a group homomorphism if it holds:
+\begin{gather*}
+    \phi (g \circ h) = \phi (g) * \phi (h) \quad \forall g, h \in G
+\end{gather*}
+If the homomorphism is also bijective then it is called \textit{isomorphism} then we write $G \simeq H$ and the two groups have the same algebraic structure.
+\\
+Since the points of an elliptic curve form a group \cite{ottimo per puntiGruppo e Weil pairing}, it is natural to extend the concepts of homomorphism and isomorphism to elliptic curves. In particular, it turns out that two elliptic curves over $\mathbb{K}$ are isomorphic over the algebraic closure $\overline{\mathbb{K}}$ if and only if they have the same j-invariant.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Isogenies}
+\label{isogenies & velu}
+An isogeny is a surjective group homomorphism between two elliptic curves which is expressed by rational functions. Moreover, given two elliptic curves $E$, $E'$ and the isogeny $\phi : E \to E'$, when the isogeny $\phi$ satisfies an extra property, named separability, its kernel is finite.
+%
+%
+%
+%
+%
+%
+Two elliptic curves $E$, $E'$ are thus said \textit{isogenous} if there exists an isogeny between them. Moreover, the isogeny preserves the cardinality of each curve: two elliptic curves are isogenous over an extension $\mathbb{F}$ of $\mathbb{K}$ if and only if $\#E(\mathbb{F}) = \#E'(\mathbb{F})$, where $E(\mathbb{F})$ denotes the subgroup of points with coefficients in $\mathbb{F}$ and ``defined over $\mathbb{F}$'' means that the rational functions defining $\phi$ have coefficients in $\mathbb{F}$. 
+\\
+\\
+Isogenies can be computed via Velù's formulae: let $E: y^2=x^3+ax+b$ be an elliptic curve over a finite field $\mathbb{F}_q$, $P$ a generic point of $E$, $\left \langle K \right \rangle$ a cyclic group generated by $K$ and let $\phi : E \to E'$ be an isogeny with kernel $\left \langle K \right \rangle$. The arriving curve $E'$ is usually denoted as $E\big / \left \langle K \right \rangle$. Let $G$ a finite subgroup of $E$, then there is a \textit{unique} elliptic curve $E'$ and a unique separable isogeny $\phi$ such that $ker \text{ } \phi = G$ and $\phi : E \to E'$. Consequently, the notation $E' = E \big / G$ uniquely denotes the range of $\phi$. It can be proven that the isogeny $\phi$ is unique (modulo composition with isomorphisms) and $\phi (P) = (x_\phi , \, y_\phi )$ is defined as \cite{deFeo math of isogeny}:
+\begin{align} 
+    x_\phi & = x(P)+\sum_{Q\in \left \langle K \right \rangle  \setminus  \{\mathcal{O}\}} \Big( x(P+Q) -x(Q) \Big)\label{velu 1x} \\[\smallskipamount]
+    y_\phi & =y(P)+\sum_{Q\in \left \langle K \right \rangle  \setminus  \{\mathcal{O}\}} \Big( y(P+Q) -y(Q) \Big)
+\label{velu 1y}
+\end{align}
+Note that with $x(P)$ and $y(P)$ we define respectively the $x$ and $y$ coordinate of $P$.
+\\
+The image curve $E'= E/\left \langle K \right \rangle : y^2=x^3+a'x+b'$ has parameters $a'$, $b'$ defined as follows:
+\begin{align}
+    &a' = a-5 \cdot \sum_{Q\in \left \langle K \right \rangle  \setminus  \{\mathcal{O}\}} \Big( 3x(Q)^2+a \Big)
+    \label{velu 2}
+    \\[\smallskipamount]
+    &b' = b-7 \cdot \sum_{Q\in \left \langle K \right \rangle  \setminus  \{\mathcal{O}\}} \Big( 5x(Q)^3+3ax(Q)+b \Big)
+    \label{velu 3}
+\end{align}
+The formulas in \ref{velu 1x}, \ref{velu 1y}, \ref{velu 2} and \ref{velu 3} require a small constant number of computations for each $Q\in \left \langle K \right \rangle  \setminus  \{\mathcal{O}\}$ hence the computational complexity of Velù's formulae is $\mathcal{O}(\#\left \langle K \right \rangle)$ where $\#\left \langle K \right \rangle$ denotes the cardinality of $\left \langle K \right \rangle$.
+\\
+%
+%
+%
+An example of isogeny \cite{isogenie de feo, isogeny graphs} is shown in figure \ref{isogeny_graph} where the left curve $E$, defined over $\mathbb{F}_{11}$ by $y^2=x^3+x$ is mapped on the right curve $E'$, defined over $\mathbb{F}_{11}$ by $y^2=x^3-4x$. The kernel is the point $(0,0)$ in $E$ and the isogeny is defined by:
+\begin{gather*}
+    \phi(x, y) = \left(\ddfrac{x^2+1}{x}, y\ddfrac{x^2-1}{x^2}\right).
+\end{gather*}
+%
+%
+%
+%
+%
+\begin{figure}
+ \includegraphics[width=\textwidth,center]{isogeny_graph}
+ \caption{Isogeny mapping between $E$ and $E'$ \cite{isogenie de feo}}
+ \label{isogeny_graph}
+\end{figure}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsubsection{Degree}
+Following \cite{deFeo math of isogeny, isogeny graphs}, we define the degree of a separable isogeny $\phi : E \to E'$ as the finite cardinality of its kernel. It is common in literature to call an isogeny $\phi$ of degree $deg(\phi) = d$ a $d$-isogeny and so we will do hereafter.
+%\\ The isogeny $\phi$ is said to be separable if the extension of function fields is. In this case its degree is equal to its kernel's: $deg \text{ } \phi = \#ker \text{ } \phi$.
+%
+%
+%
+\subsubsection{Dual Isogenies}
+For any isogeny $\phi : E \to E'$ between two elliptic curves there exists a dual isogeny \cite{isogeny graphs} $\widehat \phi : E' \to E$ such that $\widehat \phi \circ \phi =\phi \circ \widehat \phi = [deg \, \phi]$. Furthermore it is important to note that $deg \, \widehat \phi = deg \, \phi$, and $\widehat{\widehat{\phi}} = \phi$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Endomorphisms}
+Isogenies from a curve to itself are called \textit{endomorphisms}. Given an elliptic curve $E$ and an integer $m$, the scalar multiplication-by-\textit{m} defined by $[m] : P \to [m]P$ is an endomorphism of $E$. Its kernel is exactly the $m$-th torsion group $E[m]$. 
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsubsection{Frobenius Endomorphism}
+Let $E$ be an elliptic curve defined over a finite field $\mathbb{F}_q$ with $q$ elements. Its Frobenius endomorphism is the map
+$\pi : P=(x, y) \to (x^q, y^q)$.
+\\
+It holds that:
+\begin{itemize}
+    \item $ker (\pi) = \{\mathcal{O}\}$
+    \item $ker (\pi -1) = E(\mathbb{K})$
+\end{itemize}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Bases and Weil Pairing}
+Given an elliptic curve $E$ defined over a finite field $\mathbb{F}_q$, with $q=p^n$, and an integer $m \ne p$, we know that $E[m]=\mathbb{Z}_m \times \mathbb{Z}_m$. A basis for $E[m]$ is a pair $(P, Q) \in E[m] \times E[m]$ of linearly independent points. Indeed, the set of all their linear combinations is equal to $E[m]$. In that case we write $\left \langle P, Q\right \rangle = E[m]$. For the sake of readability, we recall that two points $P$, $Q$ of an elliptic curve are linearly independent when $[v]P+[u]Q=\mathcal{O}$ if and only if $v=u=0$.
+\\
+It is possible to check the linear independency of two points using the Weil pairing \cite{ottimo per puntiGruppo e Weil pairing}. 
+\begin{definition}{\textbf{Weil Pairing}}
+    Let $E$ be an elliptic curve over a field 
+    $\mathbb{K}$ and let $n$ be an integer not divisible by the characteristic of $\mathbb{K}$. 
+    Then $E[n] \simeq (\mathbb{Z}\big / n\mathbb{Z})^2$. 
+    Let $\mu _n = \{x \in \mathbb{\overline{K}} | x^n = 1\}$ be the group of 
+    $n$-th roots of unity in $\mathbb{\overline{K}}$, which is a cyclic group of order $n$ and any generator $\zeta$ of $\mu _n$ is called a 
+    \textit{primitive n-th root of unity}. 
+    The Weil pairing is hence a bilinear map $e_n : E[n] \times E[n] \to \mu _n$.
+\end{definition}
+\noindent A bilinear map is a function that combines elements of two groups, two instances of $E[n]$ in our case, and returns an element of a third group, $\mu_m$, $E[n] \times E[n]$, and is linear in both its arguments.
+\\
+For a basis $(P, Q)$ of $E[n]$ the Weil pairing $e_n(P, Q)$ is a primitive $n$-th root of unity. Consequently, to check if $(P, Q)$ is a basis for $E[m]$ is sufficient to check the order of $e_n(P, Q)$, in particular if it is $n$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{Mathematical improvements}
+This section aims to sum up some of the many improvements to the concepts seen in section \ref{sec Important concepts} and commonly used in ECC practical implementations.
+%
+%
+%
+\subsection{Montgomery Curves}
+A Montgomery curve over a field $\mathbb{K}$ is a special form of an elliptic curve with affine equation:
+\begin{gather}
+    M_{A, B} : By^2 = x(x^2 + Ax +1)
+\end{gather}
+where the parameters $A$, $B$ are in $\mathbb{K}$ and satisfy $B \ne 0$, $A^2 \ne 4$. In projective coordinates $(X:Y:Z)$ with $x=X/Z$, $y=Y/Z$ the equation becomes:
+\begin{gather}
+    M_{A, B} : BY^2Z = X(X^2 + AXZ +Z^2)
+\end{gather}
+The latter has a unique point at infinity $\mathcal{O} = (0:1:0)$ i.e., it is the \textbf{only} point satisfying the equation where $Z=0$.
+%
+%
+%
+\\
+\\
+\noindent In practical implementations, many computational improvements come from choosing a Montgomery curve over a general elliptic curve given by its Weierstrass equation. For a complete discussion about these special curves it is recommended to read \cite{montgomery speed up}; for this thesis the most relevant speed up are: 
+\begin{itemize}
+    \item reduced number of operations for the group law;
+    \item only $x$-coordinates computations are possible thus halving the overall operations when computing a scalar multiplication;
+    \item the point addition can be further improved: when adding the points $P$, $Q$, the knowledge of a third point $Q-P$ reduces the overall computations. In this case we talk about Differential Addition.
+\end{itemize}  
+%
+%
+%
+%
+%
+%
+\label{mont constants}
+Several variants of the Montgomery curve coefficients are used when implementing elliptic curve cryptographic schemes \cite{documentazione SIKE} to achieve better performances. Let $E_a$ be the curve $E_A$ defined over $\mathbb{F}_{p^2}$ by the equation $y^2 = x^3+ax^2+x$, then we can write the pair $(A:C)$ to denote a pair equivalent to $(a:1)$ in $\mathbb{P}^1(\mathbb{F}_{p^2})$. Furthermore, we define the equivalences:
+\begin{align*}
+    &(A_{24}^+:C_{24}) \longleftrightarrow (A+2C:4C)
+    \\
+    &(A_{24}^+:A_{24}^-)\longleftrightarrow (A+2C:A-2C)
+    \\
+    &(a_{24}^+:1)\text{ \quad  }\longleftrightarrow (A+2C:4C)
+\end{align*}
+%COMMENTATA TUTTA STA ROBA
+% Other important improvements rely on a different curve equation and precomputing some constants used in scalar multiplication and j-invariant calculation \cite{isogenie de feo}. First of all it is important to remember that the notation $(X_p:Z_p)$ represents a projective tuple in $\mathbb{P}^1$ over $\mathbb{F}_{p^2}$, also the affine $x$-coordinate can be represented as $x_p = X_p/Z_p$. Now, starting from the affine curve $E_a/\mathbb{F}_{p^2}: y^2=x^3+ax^2+x$, as done in \cite{A24C24 p1, documentazione SIKE}, we can write the equivalence $(A:C) \sim (a:1)$ which transforms the curve into: 
+% \begin{align}  \label{proj const Montgomery}
+%     E : CBy^2=Cx^3+Ax^2+Cx
+% \end{align}
+% This new equation allows to reduce the number of inversions, the most costly operation, with the little disadvantage of slightly increasing the total operations needed.
+% \\
+% %
+% %
+% %
+% The pair $(A_{24}:C_{24})$ denotes the constant $(a-2) \big / 4$ in $\mathbb{P}^1$ which can be expressed as:
+% \begin{gather*}
+%     (A_{24}:C_{24}) \sim (a-2:4)
+% \end{gather*}
+% %
+% %
+% %
+% Lastly the constants used in practice are:
+% \begin{align*}
+%     &(A_{24}^+:C_{24})\sim (A+2C:4C)
+%     \\
+%     &(A_{24}^+:A_{24}^-)\sim (A+2C:A-2C)
+%     \\
+%     &(a_{24}^+:1)\text{ \quad  }\sim (A+2C:4C)
+% \end{align*}
+%
+%
+%
+%
+%
+%
+% \subsubsection{j-invariant}
+% The j-invariant of a standard projective Montgomery curve depends only on the parameter $A$ and is computed as follows:
+% \begin{gather*}
+%     j(M_{(A, B)}) = \ddfrac{256(A^2-3)^3}{A^2-4}
+% \end{gather*}
+% In implementation scenarios we use the equation \ref{proj const Montgomery} which requires the computation of $(A:C)$ to compute the new j-invariant:
+% \begin{gather*}
+%     j(M_{(A, B)}) = \ddfrac{256(A^2-3C^2)}{C^4(A^2-4C^2)}.
+% \end{gather*}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Weil Pairing}
+\label{sec weil ottimizzato}
+The base algorithm for computing the Weil pairing $e_n$ requires, roughly, $\mathcal{O}(n)$ operations which is greatly inefficient for large-order bases; as an example, typical orders \cite{ottimo per puntiGruppo e Weil pairing, weil pairing ottimizzato} are $2^{250}$ and $3^{159}$. We now show a faster way to run the computation as described in \cite{weil pairing ottimizzato}.
+\\
+Let $P$, $Q$ be two points both of order $m n$ of an elliptic curve $E$, so that they are in $E[mn]$; the $n$-th power of the pairing $e_{mn}(P,Q)$ can be computed as follows \cite{ottimo per puntiGruppo e Weil pairing, weil pairing ottimizzato}:
+\begin{gather*}
+    e_{mn}(P,Q)^n = e_{m}([n]P,[n]Q)
+\end{gather*}
+We now consider an example: let $m=4$, $n=2^{370}$ such that $mn = 2^{372}$, then:
+\begin{gather*}
+    e_{mn}(P,Q)^n =  e_{4\cdot 2^{370}}(P,Q)^{2^{370}} = e_{4}([2^{370}]P,[2^{370}]Q)
+\end{gather*}
+Together with the assertion that $P$ and $Q$ both have order $mn = 2^{372}$, the assertion that the Weil pairing $e_{4}([2^{370}]P,[2^{370}]Q)$ has order $4$, proves that $P$ and $Q$ have Weil pairing of order $2^{372}$. If indeed $P$ and $Q$ have order $2^{372}$, the points $P'=[2^{370}]P$ and $Q'=[2^{370}]Q$ both have order $4$. In that case, $e_4(P', Q')$ is of order less than $4$ if and only if $P'$ and $Q'$ are independent. Finally, this is equivalent to say that $P$ and $Q$ are linearly independent \cite{weil pairing ottimizzato}.
+\\
+To prove this last step we can exploit another speed up: all the described operations are possible considering only the $x$ coordinates of input points $P$, $Q$. For the following procedure we are going to denote with $x(P)$ the affine $x$-coordinate of the point $P$, and with $X(P)$, $Z(P)$ its projective $X$- and $Z$-coordinate respectively such that $x(P) = \ddfrac{X(P)}{Z(P)}$. 
+\\
+At this point it is mandatory to check $P' \ne Q'$ that is $x(P') \ne x(Q')$. Since ECC implementations work with projective points we can transform the latter expression into $\ddfrac{X(P')}{Z(P')} \ne \ddfrac{X(Q')}{Z(Q')}$ and obtain $X(P')Z(Q') \ne X(Q')Z(P')$ which is called projective cross-multiplication.
+\\
+Lastly, we need to check:
+\begin{itemize}
+    \item Said $\left(\overline{X}:\overline{Z}) = x([2]P'\right)$, then it must hold true that $\overline{Z} \ne 0$ meaning that $[2]P'$ is not the point at infinity;
+    \item Said $\left(\overline{\overline{X}}:\overline{\overline{Z}}\right) = x([4]P')$, then it must hold true that $\overline{\overline{Z}} = 0$ meaning that $[4]P'$ is the point at infinity.
+\end{itemize}
+The same checks have to be performed on $Q'$.
+\\
+At this point if both $P'$ and $Q'$ have passed all these tests then $[4]P' = [4]Q' = \mathcal{O}$ finally proving that $P$ and $Q$ both have order $2^{372}$ and are linear independent \cite{weil pairing ottimizzato}. The pair $(P, Q)$ is then a basis of order $2^{372}$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Isogenies}
+\label{walk strategies}
+We have seen in Section \ref{isogenies & velu} that, being $\left \langle K \right \rangle$ a cyclic subgroup of points of an elliptic curve $E$, the worst drawback of using Velù's formulae for computing an isogeny from $E$ having $\left \langle K \right \rangle$ as kernel, is that they require $\mathcal{O}(\#\left \langle K \right \rangle)$ operations hence making their implementation intractable when $\#\left \langle K \right \rangle$ is big. A great improvement is possible when the order of $K$ is smooth, meaning, for example, it is a power of a prime number, via composition of small degree isogenies \cite{weil pairing ottimizzato, paper seedot} obtaining a cost drop to
+$\tilde{\mathcal{O}}(log(\#G))$.
+Since typical applications use kernels of order $2^n$ or $3^m$, this speed up is fundamental for practical implementations.
+\\
+\\
+Costello et al. \cite{weil pairing ottimizzato} write about efficiently computing large degree isogenies via small degree isogenies. We now describe their method to compose isogenies.
+\\
+Given an elliptic curve $E$ defined over $\mathbb{F}_{p^2}$, a cyclic subgroup $\left \langle R \right \rangle \subseteq E[l^e] \subseteq E(\mathbb{F}_{p^2})$ of order $l^e$, with $l$ prime, there is a unique isogeny $\phi _R : E \to E\big / \left \langle R \right \rangle$ of degree $l^e$ defined over $\mathbb{F}_{p^2}$ with kernel $\left \langle R \right \rangle$. Set $E_0 = E$, $R_0 = R$, such isogeny can be computed by composing $e$ $l$-isogenies \cite{hard problems}, obtaining intermediate curves $E_{i+1} = E_i\big / \left \langle [l^{e-i-1}]R_i \right \rangle$ and intermediate points $R_{i+1}=\phi_{i}(R_{i})$ for $0 \le i < e$. Note that the point $R_i$ is an $l^{e-i}$-torsion point and so the point $ [l^{e-i-1}]R_i$ has order $l$. The resulting isogeny is then $\phi_R = \phi _{e-1} \circ \ldots \circ \phi _0$ having degree $l^e$ as required. Indeed, the composition of two separable isogenies is a separable isogeny, and it is possible to prove that the degree of $\phi \circ \varphi$ is $deg(\phi)\,deg(\varphi)$.
+\\
+Even though we may compute the curve $E_{i+1}$ and its isogeny $\phi _i$ via Velù's formulae, this strategy is still too onerous. A better strategy is a particular isogeny walk, as shown in figure \ref{isogeny_walk} for the case $e=6$ \cite{hard problems}. Bullets ``$\bullet$'' represent points: those at the same horizontal level have the same order, those lying on the same left-diagonal belong to the same curve. Dashed edges ``$- - -$'' are directed from top to bottom: leftward edges represent a multiplication-by-$l$, rightwards edges represent the evaluation of an $l$-isogeny.
+\\
+At the beginning of the algorithm only the root $R$ is known and our aim is to compute all the points on the bottom line.
+\begin{figure}[H]
+ \includegraphics[width=.7\textwidth,center]{isogeny_walk}
+ \caption{$l$-isogeny walks up to degree $l^5$}
+ \label{isogeny_walk}
+\end{figure}
+%
+%
+%
+At this point we need a ``\textit{strategy}'' \cite{hard problems, weil pairing ottimizzato} to minimise the operations in descending the graph in figure \ref{isogeny_walk} down to the bottom leaves. We may define a strategy as a binary tree topology: a tree in which each node has only one parent node (directed from above in oriented trees with the root on top) and two or zero child node (directed to the bottom direction). From each of its nodes two sub-trees, or sub-strategies, originate on strictly smaller leaf sets. The overall cost for the strategy is the sum of the sub-strategy costs plus the cost for moving down the tree from the root on top along the edges to the roots of the sub-strategies. Given the costs of all sub-strategies, one can select then a strategy by choosing the one with minimum cost hence named \textit{optimal}. 
+
+A strategy can be stored in a simple list \textit{L} of integers, with \textit{L} having length equal to the total number of leaves. The $i$-th element, namely $L[i]$, in the list characterises the sub-strategy on a graph with $i$ leaves.
+\\
+For the given graph there are seven optimal formed strategies as shown in figure \ref{optimal_traversing_strategies} \cite{hard problems}.
+\begin{figure}[H]
+ \includegraphics[width=\textwidth,center]{optimal_traversing_strategies}
+ \caption{Optimal strategies for $e=4$}
+ \label{optimal_traversing_strategies}
+\end{figure}
+%
+%
+%
+Among all strategies, there are optimal ones which minimise the number of operations. These can be precomputed offline and, for large smooth degree isogeny computations, say for $l^e$-isogeny, are performed with complexity $\mathcal{O}(e \log{}e)$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsubsection{Small degree isogenies}
+In this section we show the formulae alternative to that of Velù's used in real applications. There, only two different kinf of isogenies are usually used: $2$- and $3$-isogenies. In the former case, a further speed up is possible if we consider $4$-isogenies which halves the total operations needed \cite{documentazione SIKE}.
+%
+%
+%
+\subsubsection{2-isogenies}
+Let $E_{A, B}$ be an elliptic curve in Montgomery form, $(x_2, y_2) \in E_{A, B}$ be a point of order 2 having $x_2 \ne 0$. Let $\phi _2 : E_{A, B}\to E_{A', B'}$ be the unique $2$-isogeny originating from $E_{A,B}$ with kernel $\left \langle (x_2, y_2)\right \rangle$. The coefficients of the image curve can be computed as follows:
+\begin{gather*}
+    \big(A', B'\big) = \Big ( 2 \cdot \left( 1-2x_2^2 \right),\quad Bx_2 \Big )
+\end{gather*}
+%
+%
+%
+For any point $P=(x_P, y_P) \notin \left \langle (x_2, y_2)\right \rangle$ of $E_{A, B}$, its image $(x_{\phi_2}, y_{\phi_2}) = \phi _2 (x_P, y_P)$ can be computed as:
+\begin{align*}
+    &x_{\phi _2} = \ddfrac{x_P^2x_2-x_P}{x_P-x_2}
+    \\
+    &y_{\phi _2} = y_P\cdot \ddfrac{x_P^2x_2-2x_Px_2^2+x_2}{\big(x_P-x_2\big)^2}
+\end{align*}
+%
+%
+%
+%
+%
+\subsubsection{4-isogenies}
+Let $E_{A, B}$ be an elliptic curve in Montgomery form, $(x_4, y_4) \in E_{A, B}$ be a point of order 4 having $x_4 \ne \pm 1$. Let $\phi _4 : E_{A, B}\to E_{A', B'}$ be the unique $4$-isogeny originating from $E_{A, B}$ with kernel $\left \langle (x_4, y_4)\right \rangle$. The coefficients of the image curve can be computed as follows:
+\begin{gather*}
+    \big(A', B'\big) = \Big ( 4x_4^4-2,\quad -x_4(x_4^2+1)\cdot B/2 \Big )
+\end{gather*}
+%
+%
+%
+For any point $P=(x_P, y_P) \notin \left \langle (x_4, y_4)\right \rangle$ of $E_{A, B}$, its image $(x_{\phi_4}, y_{\phi_4}) = \phi _4 (x_P, y_P)$ can be computed as:
+\footnotesize
+\begin{align*}
+    &x_{\phi _4} = \ddfrac
+    {-x_P(x_Px_4^2+x_P-2x_4)\cdot(x_Px_4-1)^2}
+    {(x_P-x_4)^2\cdot(2x_Px_4-x_4^2-1)}
+    \\
+    &y_{\phi _4} = y_P\cdot\ddfrac
+    {-2x_4^2(x_Px_4-1) \Big( x_P^4(x_4^2+1)-4x_P^3(x_4^3+x_4)+2x_P^2(x_4^4+5x_4^2)-4x_P(x_4^3+x_4)+x_4^2+1 \Big)}
+    {(x_P-x_4)^3(2x_Px_4-x_4^2-1)^2}
+\end{align*}\normalsize
+%
+%
+%
+\subsubsection{3-isogenies}
+Let $E_{A, B}$ be an elliptic curve in Montgomery form, $(x_3, y_3) \in E_{A, B}$ be a point of order 3. Let $\phi _3 : E_{A, B}\to E_{A', B'}$ be the unique $3$-isogeny originating from $E_{A, B}$ with kernel $\left \langle (x_3, y_3)\right \rangle$. The coefficients of the image curve can be computed as follows:
+\begin{gather*}
+    \big(A', B'\big) = \Big ( \left( Ax_3-6x_3^2+6 \right)x_3,\quad Bx_3^2 \Big )
+\end{gather*}
+%
+%
+%
+For any point $P=(x_P, y_P) \notin \left \langle (x_3, y_3)\right \rangle$ of $E_{A, B}$, its image $x_{\phi_3}, y_{\phi_3}$ by $\phi_3$ can be computed as:
+\begin{align*}
+    &x_{\phi _3} = \ddfrac
+    {x_P(x_Px_3-1)^2}
+    {(x_P-x_3)^2}
+    \\
+    &y_{\phi _3} = y_P\cdot \ddfrac
+    {(x_Px_3-1)(x_P^2x_3-3x_Px_3^2+x_P+x_3)}
+    {(x_P-x_3)^3}
+\end{align*}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{Isogeny-based Cryptography}
+Traditional Elliptic Curve Cryptography (ECC) relies for its security on the Discrete Logarithm Problem (DLP). That said, Shor's algorithm represents a threat to DLP-based cryptography since it can compute discrete logarithms in polynomial time. Isogeny-based cryptography \cite{deFeo math of isogeny} is a young field, begun in the 2000s but stayed mostly discrete until the second half of 2010 when the cryptographic community realised the possibly near arrival of a general purpose quantum computer. While the capabilities of quantum computers would render ECC worthless, isogeny-based cryptography seems to resist much better. A quantum-resistant approach involves the use of the \textit{computational supersingular isogeny problem} stated as follows: ``\textit{given two isogenous supersingular elliptic curves $E$ and $E'$, find an isogeny $\phi$ such that $\phi : E \to E'$}''. For the given problem does not exist any efficient quantum attack thus making it post-quantum resistant.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\chapter{SIDH-based OT}
+\label{chapter seedot}
+The protocol studied and implemented in this thesis relies on an adaptation of the Supersingular Isogeny Diffie-Hellman (SIDH) to construct an Oblivious Transfer (OT) protocol. %By coupling these two protocols together it is possible to construct a post-quantum multi-party scheme. 
+\\
+First things first, we separately explain how SIDH \cite{hard problems, weil pairing ottimizzato, documentazione SIKE} and a general OT work, then how it is possible to use the former to obtain an instantiation of the latter \cite{paper seedot}.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{SIDH Key Exchange}
+\label{section sidh}
+The Supersingular Isogeny Diffie-Hellman is a protocol developed by Jao and De Feo in 2011 \cite{documentazione SIKE} which offers a great ratio efficiency-security having keys smaller than other post-quantum protocols (lattice-based and code-based) and than traditional Diffie-Hellman public keys \cite{weil pairing ottimizzato}.
+\\
+The scheme begins with a shared supersingular elliptic curve and two parties, Alice and Bob, who get assigned two different torsion groups. After few isogenies and data being exchanged both parties have two curves with the same j-invariant. The latter is then used as shared key hence used, for example, to encrypt and decrypt data between the parties. Let's now describe the protocol in deeper details.
+\\
+\\
+All the supersingular elliptic curves used in SIDH are defined over $\mathbb{F}_{p^2}$ where $p$ is a prime of the form $p = l_A^{e_A} l_B^{e_B} \pm 1$, $l_A$ and $l_B$ are small primes, $e_A$ and $e_B$ are integers. 
+%such that $l_A^{e_A} \approx l_B^{e_B}$. 
+All SIDH implementations consider $l_A = 2$, $l_B = 3$ and so we will henceforth.
+Typical choices for $e_A$ fall within the range $[100, 500]$ according to the security level desired; $e_B$ is then chosen such that $l_A^{e_A} \approx l_B^{e_B}$. 
+In order to simplify the notation we will be using $n$ instead of $e_A$ and $m$ instead of $e_B$.% and so $l_A^{e_A} = 2^n$ to Alice, $l_B^{e_B} = 3^m$ to Bob.
+\\
+The initial public parameters are:
+\begin{itemize}
+    \item A supersingular elliptic curve $E$ defined over $\mathbb{F}_{p^2}$ having $\#E(\mathbb{F}_{p^2})=\left(l_A^{e_A} l_B^{e_B} \right)^2$;
+    \item A bases $(U, V)$ for $E[2^n]$ which lies in $E(\mathbb{F}_{p^2})$;
+    \item A bases $(P, Q)$ for $E[3^m]$ which lies in $E(\mathbb{F}_{p^2})$.
+\end{itemize}
+%
+%
+%
+The protocol proceeds as follows:
+\\
+\[
+\begin{array}{@{}l @{}c @{}l @{}}
+%\toprule
+    \textbf{Alice} & \text{\qquad} & \textbf{Bob}\\
+    \text{Chooses $x_A, y_A \in \mathbb{Z}\big / 2^n\mathbb{Z}$ randomly,} && \text{Chooses $x_B, y_B \in \mathbb{Z}\big / 3^m\mathbb{Z}$ randomly,} 
+    %
+    \\
+    \text{at least one of them coprime to $2$} && \text{at least one of them coprime to $3$} 
+    %
+    \\[\smallskipamount]
+    \text{Computes $R_A = x_A U + y_A V$} && \text{Computes $R_B = x_B P + y_B Q$}
+    %
+    \\[\smallskipamount]
+    \text{Computes the curve $E_A = E \big / \left \langle R_A \right \rangle$} && \text{Computes the curve $E_B = E \big / \left \langle R_B \right \rangle$}
+    %
+    \\[\smallskipamount]
+    \text{Computes the isogeny $\phi _A : E \to E_A$} && \text{Computes the isogeny $\phi _B : E \to E_B$}
+    \\
+    \text{having $\left \langle R_A \right \rangle$ as kernel} && \text{having $\left \langle R_B \right \rangle$ as kernel}
+    %
+    \\[\medskipamount]
+    \text{Computes $P'=\phi _A(P)$, $Q'=\phi _A(Q)$} && \text{Computes $U'=\phi _B(U)$, $V'=\phi _B(V)$}
+    %
+    \\[\bigskipamount]
+    \multicolumn{3}{c}{\xleftrightarrow{\text{\normalsize \quad Exchange curves $E_A$, $E_B$ and points $U'$, $V'$, $P'$, $Q'$\quad}}}
+    %
+    \\[\medskipamount]
+    \text{Computes $E_{BA} \simeq E_B \big / \left \langle x_A U'+y_A V' \right \rangle$} && \text{Computes $E_{AB} \simeq E_A \big / \left \langle x_B P'+y_B Q' \right \rangle$}
+\end{array}\\[\bigskipamount]
+\]
+Since $E_{AB} \simeq E_{BA}$, at the end of the protocol both parties have the same j-invariant which can be used as shared secret. 
+\\
+Figure \ref{schema_SIDH} shows the protocol graphically to ease the comprehension.
+%TODO: Cambia immagine e riadattala con la notazione corretta
+\begin{figure}[H]
+ \includegraphics[width=\textwidth,center]{schema_SIDH}
+ \caption{SIDH schema. Alice private parameters are in red, Bob's are in blue. Public parameters are green.}
+ \label{schema_SIDH}
+\end{figure}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Correctness}
+This brief section shows how Alice and Bob compute two curves isomorphic to one another thus yielding the same j-invariant.
+\\
+\\
+Alice computes:
+\begin{align*}
+    E_{BA} &= E_B \big / \left \langle x_A U'+y_A V' \right \rangle\\
+           &= E_B \big / \left \langle x_A \phi _B(U)+y_A \phi _B(V) \right \rangle\\
+           &= E_B \big / \left \langle \phi _B(x_A U+y_A V) \right \rangle\\
+           &= E_B \big / \left \langle \phi _B(R_A) \right \rangle\\
+           &= \left(E \big / \left \langle R_B \right \rangle \right) \big / \left \langle \phi _B(R_A) \right \rangle\\
+           &= E \big / \left \langle R_B, R_A \right \rangle
+\end{align*}
+Bob computes:
+\begin{align*}
+    E_{AB} &= E_A \big / \left \langle x_B P'+y_B Q' \right \rangle\\
+           &= E_A \big / \left \langle x_B \phi _A(P)+y_B \phi _A(Q) \right \rangle\\
+           &= E_A \big / \left \langle \phi _A(x_B P + y_B Q) \right \rangle\\
+           &= E_A \big / \left \langle \phi _A(R_B) \right \rangle\\
+           &= \left(E \big / \left \langle R_A \right \rangle \right) \big / \left \langle \phi _A(R_B) \right \rangle\\
+           &= E \big / \left \langle R_A, R_B \right \rangle
+\end{align*}
+Therefore $E_{BA}= E \big / \left \langle R_B, R_A \right \rangle = E \big / \left \langle R_A, R_B \right \rangle = E_{AB}$ proving that Alice and Bob both have a curve isomorphic to their party's curve.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Security}
+Before introducing the problem which SIDH's security relies on it is important to state the \textit{Standard Isogeny} problem. 
+\\
+``Given a prime $p= 2^n3^m \pm1$, two supersingular elliptic curves $E$, $E_A$ over $\mathbb{F}_{p^2}$, determine a $2^n$-isogeny $\phi_A:E \to E_A$ if it exists''.
+\\
+The problem exploited for SIDH's security is similar to the \textit{Standard Isogeny} problem but it gives some information to the attacker. The problem is stated as follows \cite{fede sidh problem}: ``Given a prime $p= 2^n3^m \pm1$, two supersingular elliptic curves $E$, $E_A$ over $\mathbb{F}_{p^2}$, determine the $2^n$-isogeny $\phi_A:E \to E_A$, if it exists, \textbf{also} knowing a basis $(P, Q)\in E[3^m]$ and $P'=\phi_A(P)$, $Q'=\phi_A(Q)$''.
+\\
+This problem is assumed to be as hard as the \textit{Standard Isogeny} problem and all the known classical and quantum attacks against it have exponential complexity. In fact the fastest known attack is Tani's Claw Finding attack which requires $\mathcal{O}(\sqrt[4]{p})$ operations on a classical computer and $\mathcal{O}(\sqrt[6]{p})$ on a quantum computer \cite{weil pairing ottimizzato}.
+\\
+\\
+SIDH's primes $p$ (one for each security level)were initially selected considering only the running time of the Claw Finding attack without considering its space complexity amounting to $\mathcal{O}(\sqrt[6]{p})$ qubits. 
+\\
+A helpful notation for the following disclosure is to express an $n$-bit length prime number $p$ as $p_n$. %In this way we hope to write a more readable section.
+\\
+As an example \cite{sidh security parameters}, in NIST's Competition's Round 1 introduced in Section \ref{nist challenge section}, in order to achieve a $b$-bit security level against known classical and quantum attacks SIDH primes $p$ were selected with bitlength approximately equal to $6b$. Hence the $751$-bit prime $p_{751}=2^{372}3^{239}-1$ was proposed for the 128-bit of classical security and the Quantum Level I. Moreover the $964$-bit prime $p_{964}=2^{486}3^{301}-1$ was proposed for the 160-bit classical security level.
+\\
+For the second round of the NIST's competition, few revisions were made thus reaching: $p_{434}$ for 128-bit classical and Quantum Level II security, $p_{503}$ for 160-bit classical and Quantum Level III security, $p_{610}$ for 192-bit classical and Quantum Level IV security, finally $p_{751}$ for 256-bit classical and Quantum Level V security. The $964$-bit curve was hence discarded.
+\\
+More details about attacks and examples can be found in \cite{sidh attack uno, sidh attack due, sidh attack tre}. 
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{Oblivious Transfers}
+\label{section ot}
+An \textit{oblivious transfer}, or \textbf{OT}, is a cryptographic scheme in which two or more parties are involved. 
+\\
+There exist different instantiations of the oblivious transfer primitive each of them achieving different yet similar goals. The base idea is to send one of many pieces of information to a second party while the sender has no knowledge of which piece has been sent. A classical instantiation is the \textit{Rabin OT} \cite{rabinot} in which Alice, with a probability of $1/2$, sends a simple bit to Bob. This scheme leaves Alice ``oblivious'' of whether Bob has received it or not.
+\\
+\\
+\indent There exists another variation proposed by Shimon Even, Oded Goldreich and Abraham Lempel \cite{nascita ot} called ``\textit{1 out of 2 Oblivious Transfer}'', often written as $\binom{2}{1}$-OT, which can easily be generalised to ``\textit{1 out of n OT}''. In this variation, a party B, receives one out of two (alternatively \textit{n}) pieces of information but the sender party A, which owns both pieces, does not know which piece B has received.
+\\
+As shown in figure \ref{OT_base}, A sends the pieces $b_0$, $b_1$ to B which, in turn, chooses a random bit $c$. At the end of the transfer B will have knowledge of the piece $b_c$ coming from A. It is fundamental to observe that $b_0$ and $b_1$ are masked, and that B is only able to recover one of them, i.e. $b_c$.
+\begin{figure}[H]
+ \includegraphics[width=.4\textwidth,center]{OT_base}
+ \caption{Simple $\binom{2}{1}$-OT}
+ \label{OT_base}
+\end{figure}
+A typical OT application is the secure function evaluation where every party holds a part of an input for a given function. In this scenario, the output should be computed in a way such that no party has to reveal unnecessary information about their piece of information. Correctness of the protocol is usually proved with a zero knowledge proof.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{SIDH-based OT}
+\label{section seedot}
+In this chapter we introduce the SIDH-based oblivious transfer protocol proposed by Vanessa Vitse in \cite{paper seedot}. 
+%Following a random oblivious transfer protocol based on Diffie-Hellman key exchange, Vitse transposes it to a post-quantum variation based on SIDH scheme. 
+The goal is to construct oblivious transfer protocols based on SIDH scheme described in Section \ref{section sidh}.
+\\
+%
+%
+%
+The initial public parameters are:
+\begin{itemize}
+    \item A supersingular elliptic curve $E$ defined over $\mathbb{F}_{p^2}$, with $p$ prime of the form $2^n 3^m \pm 1$ and having $\#E(\mathbb{F}_{p^2})=\left(l_A^{e_A} l_B^{e_B} \right)^2$;
+    \item A bases $(P, Q)$ of $E[3^m]$ with $P$, $Q \in E(\mathbb{F}_{p^2})$;
+    \item A secure symmetric encryption protocol \textit{Enc} for which we use the notation: $c = Enc(m, k)$, $m = Enc^{-1}(c, k)$, where $m$ is the plain text message, $k$ is the encryption key, $c$ is the cipher text;
+    \item A key derivation function \textit{KDF} such that \textit{k = KDF(seed)} for a given initial input \textit{seed}.
+\end{itemize}
+%
+%
+%
+For simplicity we consider a $\binom{2}{1}$-OT in which Alice has \textit{two} secrets $\{s_0, s_1\}$. The protocol then proceeds as follows:
+\begin{center}
+    \begin{tabular}{ l l }
+        \textbf{Alice} & \textbf{Bob}
+        \\
+        Computes \textit{two} bases for $E[2^n]$: &\\
+        $(R_0, T_0), (R_1, T_1)$&
+        \\[\smallskipamount]
+        
+        \multicolumn{2}{l}{Computes \textit{two} curves and \textit{two} isogenies:}\\
+        $E_{A,0} = E \big / \left \langle R_0 \right \rangle, \; \phi _{A,0} : E \to E_{A,0}\;\;$ &\\
+        $E_{A,1} = E \big / \left \langle R_1 \right \rangle, \; \phi _{A,1} : E \to E_{A,1}\;\;$ &
+        \\[\smallskipamount]
+        
+        Computes \textit{two} pairs of points: &\\
+        $P_0=\phi_{A,0}(P), \; Q_0=\phi_{A,0}(Q)$, &\\
+        $P_1=\phi_{A,1}(P), \; Q_1=\phi_{A,1}(Q)$ &
+        \\[\bigskipamount]
+        
+        \multicolumn{2}{c}{$\xrightarrow{\text{Sends Bob \textit{two} tuples $\{E_{A,0}, \, P_0, \, Q_0\}, \: \{E_{A,1}, \, P_1, \, Q_1\}$}}$}
+        \\[\smallskipamount]
+        
+        & Chooses an integer $k \in \{0, 1\}$
+        \\
+        & Chooses an integer $b \in \mathbb{Z}\big /3^m\mathbb{Z}$
+        \\[\smallskipamount]
+        
+        & Computes the curve and j-invariant:\\
+        & $E_B = E\big/\left \langle P+bQ \right \rangle, \, j_B = j(E_B)$
+        \\[\smallskipamount]
+        
+        & Computes \textit{two} bases:\\
+        & $(U_0, \, V_0)$ for $E_{A,0}[2^n]$\\
+        & $(U_1, \, V_1)$ for $E_{A,1}[2^n]$\\
+        & having the same Weil pairing:\\
+        & $e_{2^n}(U_0, \, V_0) = e_{2^n}(U_1, \, V_1)$
+        \\[\smallskipamount]
+        
+        & Computes the curve and isogeny:\\
+        & $E_B' \simeq E_{A, k}\big/\left \langle P_k+bQ_k \right \rangle , \, \phi_B' = E_{A, k} \to E_B'$
+        \\[\smallskipamount]
+        
+        & Computes the points:\\
+        & $U_k'=\phi_B'(U_k), \; V_k'=\phi_B'(V_k)$
+        \\[\bigskipamount]
+        
+        \multicolumn{2}{c}{$\xleftarrow{\text{Sends Alice $\{E_B', \, U_k', \, V_k'\}$ and the \textit{two} basis $(U_0, \, V_0)$, $(U_1, \, V_1)$}}$}  
+    \end{tabular}
+\end{center}
+%
+\begin{center}
+    \begin{tabular}{ l l }
+        \multicolumn{2}{l}{Computes \textit{two} pairs $x_i, \, y_i \in \mathbb{Z}$, with $i=0, 1$:} \\
+        $(x_0, \, y_0)$ \textit{s.t.} $\phi_{A,0}(T_0)=x_0U_0+y_0V_0$&\\
+        $(x_1, \, y_1)$ \textit{s.t.} $\phi_{A,1}(T_1)=x_1U_1+y_1V_1$&
+        \\[\smallskipamount]
+        
+        \multicolumn{2}{l}{Computes \textit{two} curves and their correspondent j-invariants:}\\
+        $F_0 = E_B'\big/\left \langle x_0U_k'+y_0V_k' \right \rangle, \, j_0 = j(F_0)$&\\
+        $F_1 = E_B'\big/\left \langle x_1U_k'+y_1V_k' \right \rangle, \, j_1 = j(F_1)$&
+        \\[\smallskipamount]
+        
+        Encrypts her \textit{two} secrets:&\\
+        $S_0 = Enc(s_0, \, KDF(j_0))$&\\
+        $S_1 = Enc(s_1, \, KDF(j_1))$&
+        \\[\smallskipamount]
+        
+        \multicolumn{2}{c}{$\xrightarrow{\text{Sends Bob the \textit{two} encrypted secrets $S_0, \, S_1$}}$} 
+        \\
+
+        & Decrypts its chosen $k$-th secret:\\
+        & $s_k = Enc^{-1}(S_k, \, KDF(j_B))$\qquad \qquad \qquad
+    \end{tabular}
+\end{center}
+The protocol described above can be generalised to an $\binom{n}{1}$-OT with little adjustments: every ``\textit{two}'' in the protocol should be changed to ``$n$''; Alice's pairs $x_i, \, y_i \in \mathbb{Z}$, would have $i=0, \ldots , n-1$; Bob's $k$ should be chosen in the finite set $\{0, n-1\}$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Correctness}
+How can Bob be able to decrypt the $k$-th Alice's secret? Since Alice encrypts her secrets with $j_i$, Bob must have that $j_k = j_B$. In order for this to happen, Alice's curve $F_k$ must be isomorphic to the curve $E_B$ computed by Bob. We now show the correctness of the protocol. For the sake of simplicity we assume $k=0$ without loss of generality.
+%
+\begin{align*}
+    F_0 & = E_B'\big/\left \langle x_0U_0'+y_0V_0' \right \rangle \\
+        & = E_B'\big/\left \langle x_0\phi_B'(U_0)+y_0\phi_B'(V_0) \right \rangle \\
+        & = E_B'\big/\left \langle \phi_B'(x_0U_0+y_0V_0) \right \rangle \\
+        & = E_B'\big/\left \langle \phi_B'(\phi_{A,0}(T_0)) \right \rangle \\
+        & = \left(E_{A, 0}\big/\left \langle P_0+bQ_0 \right \rangle\right) \big/\left \langle \phi_B'(\phi_{A,0}(T_0)) \right \rangle 
+        \\
+        & = E_{A, 0}\big/\left \langle P_0+bQ_0 , \phi_{A,0}(T_0) \right \rangle 
+        \\
+        & = E_{A, 0}\big/\left \langle \phi_{A,0}(P)+b\phi_{A,0}(Q) , \phi_{A,0}(T_0) \right \rangle 
+        \\
+        & = E_{A, 0}\big/\left \langle \phi_{A,0}(P +b Q) , \phi_{A,0}(T_0) \right \rangle 
+        \\
+        & = \left(E \big / \left \langle R_0 \right \rangle \right) \big/\left \langle \phi_{A,0}(P +b Q) , \phi_{A,0}(T_0) \right \rangle 
+        \\
+        & = E \big / \left \langle R_0 , P +b Q , T_0 \right \rangle 
+        \\
+        & \simeq E \big / \left \langle R_0 , T_0 \right \rangle \big / \left \langle P +b Q \right \rangle 
+        \\
+        & = E \big / E[2^n] \big/\left \langle P+bQ \right \rangle \\
+        & = E \big/\left \langle P+bQ \right \rangle \\
+        & = E_B
+\end{align*}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Security}
+For this section it is important to first introduce few hard problems that we are going to use to analyse the security of the protocol introduced in the previous section. We will follow \cite{hard problems, paper seedot}.
+%
+%
+%
+\subsubsection{XDSSI - \textit{Extended Decisional Supersingular Isogeny} problem}
+Given two supersingular elliptic curves $E$ and $E'$ defined over $\mathbb{F}_{p^2}$, the pairs $(U, V)$, $(U', V')$ such that $(U, V)$ is a basis for $E[2^n]$ and $(U', V')$ is a basis for $E'[2^n]$, and having Weil pairing $e_{2^n}(U, V)^{3^m} = e_{2^n}(U', V')$; determine if there exists a $3^m$-isogeny $\phi:E \to E'$ such that $\phi(U) = U'$ and $\phi(V)=V'$.
+%
+%
+%
+\subsubsection{DSSI - \textit{Decisional Supersingular Isogeny} problem} 
+Given the prime $p$ of the form $l_A^{e_A}l_B^{e_B}\pm 1$ where $l_A$ and $l_B$ are small primes, $e_A$ and $e_B$ are integers, the supersingular curves $E_0$ and $E_A$ defined over $\mathbb{F}_{p^2}$, decide whether $E_A$ is $l_A^{e_A}$-isogenous to $E_0$.
+%
+%
+%
+\subsubsection{CSSI - \textit{Computational Supersingular Isogeny} problem} 
+Consider a supersingular elliptic curve $E$ defined over $\mathbb{F}_{p^2}$, the bases $(U, V)$ for $E[2^n]$ and $(P, Q)$ for $E[3^m]$, an integer $a\in \mathbb{Z}\big / 2^n\mathbb{Z}$, the isogeny $\phi _A :E\to E_A$ with kernel $ker \, \phi _A= \left \langle U+aV \right \rangle$. Given $E_A$ and the points $\phi_A(P)$, $\phi_A(Q)$, determine the isogeny kernel $ker \, \phi_A$.
+%
+%
+%
+\subsubsection{SSCDH - \textit{Supersingular Computational Diffie-Hellman Isogeny} problem}
+Let $E_0$ be a supersingular elliptic curve defined over $\mathbb{F}_{p^2}$ and let $\phi_A:E_0 \to E_A$ be an isogeny with kernel $\left \langle [m_A]P_A+[n_A]Q_A\right \rangle$ where $(P_A, Q_A)$ is a basis for $E_0[2^n]$ and $m_A$ and $n_A$ are chosen at random from $\mathbb{Z}\big / 2^n\mathbb{Z}$ and not both divisible by $2$. Let $\phi_B:E_0\to E_B$ be an isogeny with kernel $\left \langle [m_B]P_B+[n_B]Q_B\right \rangle$ where $(P_B, Q_B)$ is a basis for $E_0[3^m]$ and $m_B$ and $n_B$ are chosen at random from $\mathbb{Z}\big / 3^m\mathbb{Z}$ and not both divisible by $3$. \\ Given the curves $E_A$, $E_B$ and the points $\phi_A(P_B)$, $\phi_A(Q_B)$, $\phi_B(P_A)$, $\phi_B(Q_A)$, find the j-invariant of $E_{AB} = E_0\big / \big \langle [m_A]P_A+[n_A]Q_A, \, [m_B]P_B+[n_B]Q_B\big \rangle$.
+%
+%
+%
+\subsubsection{SSDDH - \textit{Supersingular Decision Diffie-Hellman} problem} 
+Given a tuple sampled with probability $1/2$ from one of the following two distributions:
+\begin{itemize}
+    \item $\Big(E_A, E_B, \phi_A(P_B), \phi_A(Q_B), \phi_B(P_A), \phi_B(Q_A), E_{AB} \Big)$, where all the parameters are as in the \textit{SSCDH} problem and $E_{AB} = E_0\big / \big \langle [m_A]P_A+[n_A]Q_A, \, [m_B]P_B+[n_B]Q_B\big \rangle$;
+    \item $\Big(E_A, E_B, \phi_A(P_B), \phi_A(Q_B), \phi_B(P_A), \phi_B(Q_A), E_{C} \Big)$, where all the parameters are as in the \textit{SSCDH} problem except for $E_{C} = E_0\big / \big \langle [m_A']P_A+[n_A']Q_A, \, [m_B']P_B+[n_B']Q_B\big \rangle$ where $m_A'$, $n_A'$ (resp. $m_B'$, $n_B'$) are chosen at random from $\mathbb{Z}\big / 2^n\mathbb{Z}$ (resp. $\mathbb{Z}\big / 3^m\mathbb{Z}$) and not both divisible by $2$ (resp. $3$);
+\end{itemize}
+determine from which distribution the tuple is sampled.
+%
+%
+% 
+\subsubsection{2-inv-CSSI - \textit{2-inverse Computational Supersingular Isogeny} problem}
+Let $E$, $E_0$, $E_1$ be three supersingular elliptic curves defined over $\mathbb{F}_{p^2}$ such that $E_0$ and $E_1$ are $2^n$-isogenous to $E$ with the corresponding isogenies denoted by $\phi_0:E\to E_0$, $\phi_1:E\to E_1$. Let $(P, Q)$ be a basis of $E[3^m]$ and for each $i=\{0, 1\}$, let $(U_i, V_i)$ be a basis of $E_i[2^n]$ and $(x_i, y_i)$ be the coordinates with respect to this basis of a generator of the kernel of the dual isogeny $\widehat \phi_i$. Given the points $P, Q, U_0, V_0, U_1, V_1, \phi_0(P), \phi_0(Q), \phi_1(P), \phi_1(Q)$, find three supersingular elliptic curves $E', F_0, F_1$ and a basis $(U', V') \in E'[2^n]$ such that $F_0 \simeq E'\big / \left \langle x_0U'+y_0V'\right \rangle$ and $F_1 \simeq E'\big / \left \langle x_1U'+y_1V'\right \rangle$.
+%
+%
+% 
+\subsubsection{2-inv-DSSI - \textit{2-inverse Decisional Supersingular Isogeny} problem}
+This problem uses the same notations of the \textit{2-inv-CSSI} problem for the following parameters: curves $E$, $E_0$, $E_1$, points $P, Q, U_0, V_0, U_1, V_1, \phi_0(P), \phi_0(Q), \phi_1(P), \phi_1(Q)$.
+\\
+We consider the following game between a party Bob and a challenger oracle:
+\begin{itemize}
+    \item Bob initially knows $E$, and can only query the oracle as described below;
+    \item Bob sends to the challenger oracle a supersingular elliptic curve $E'$ and the basis $(U', V')$ for $E'[2^n]$;
+    \item the oracle chooses four integers $x_0, y_0, x_1, y_1$ and the random points $W_0$ and $W_1$ of $E'[2^n]$. Then it computes the supersingular curves 
+    $F_0 = E'  \big / \big \langle x_0U'+y_0V'\big \rangle$, 
+    $F_1 = E'  \big / \big \langle x_1U'+y_1V'\big \rangle$, 
+    $F_0' = E' \big / \big \langle W_0 \big \rangle$, 
+    $F_0' = E' \big / \big \langle W_1 \big \rangle$;
+    \item the oracle chooses uniformly and independently two bits $b_0$, $b_1$. Then it outputs two pairs $(C_0, C_0')$ and $(C_1, C_1')$ of supersingular curves such that:
+        \begin{gather*}
+            (C_0, C_0') = 
+                \begin{cases} 
+                    (F_0, F_0') \text{ if } b_0 = 0\\
+                    (F_0', F_0) \text{ if } b_0 = 1
+                \end{cases}
+            \text{and }
+            (C_1, C_1') = 
+                \begin{cases} 
+                    (F_1, F_1') \text{ if } b_1 = 0\\
+                    (F_1', F_1) \text{ if } b_1 = 1
+                \end{cases}
+        \end{gather*}
+    \item Bob must guess whether $b_0=b_1$ or $b_0 \ne b_1$.
+\end{itemize}
+Bob's advantage in this game is defined as ``$\mathcal{P}$\textit{(c) - 1/2}'', where $\mathcal{P}$\textit{(c)} is the probability of answering correctly. Then the \textit{2-inv-DSSI} problem is hard if no algorithm can achieve a non-negligible advantage for Bob in probabilistic polynomial time.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\\
+\\
+We have now introduced all the necessary hard problems and can finally approach the security model for the protocol. Starting with Alice, we must ensure that she cannot discover Bob's secret $k$ otherwise she would know which of her secrets Bob knows, hence breaking the security offered by the oblivious transfer. In a similar way, we must ensure that it is infeasible for Bob to discover the other secrets of Alice. This case is worse than the latter since it would completely expose Alice messages if Bob were successful. 
+\\
+The two scenarios described above are named Malicious Alice and Malicious Bob respectively. We will now analyse them both and prove that both attacks are computationally infeasible assuming the hardness of the above problems against classical and quantum adversaries thus making the SIDH-based OT a secure post-quantum protocol.
+%
+%
+%
+%
+%
+%
+\subsubsection{Malicious Alice}
+Malicious Alice's analysis focuses on Bob's message:
+\begin{center}
+    $\xleftarrow{\text{Sends Alice $\{E_B', \, U_k', \, V_k'\}$ and the \textit{two} basis $(U_0, \, V_0)$, $(U_1, \, V_1)$}}$
+\end{center}
+%
+%
+%
+With this message, Alice knows $\{E_B', \, U_k', \, V_k'\}$, even more she knows that $E_B'$ is $3^m$-isogenous to one of her $E_{A, i}$: she might be able to recover Bob's secret $k$ by finding which of her curves is isogenous to $E_B'$. This problem is formalised as the \textit{Decisional Supersingular Isogeny} (\textit{DSSI}) problem and is expected to be computationally intractable \cite{hard problems}. Nevertheless Alice has more information at her disposal: $\phi_B'(U_k)$, $\phi_B'(V_k)$ and the \textit{two} pairs $(U_i, V_i)$. It is possible now to consider the Weil pairing's property \cite{paper seedot} such that:
+\begin{align*}
+    e_{2^n}(\phi_B'(U_k), \phi_B'(V_k)) = e_{2^n}(U_k, V_k)^{deg \, \phi_B'} = e_{2^n}(U_k, V_k)^{3^m}
+\end{align*}
+Now recall when in Section \ref{section seedot} Bob was required to compute \textit{two} bases $(U_0, V_0)$, $(U_1, V_1)$ for $E[2^n]$. The bases were required to be chosen such that they have the same Weil pairing $e_{2^n}$. What would happen if Bob calculated his \textit{two} bases with different pairings? Alice would check the two bases in order to find the correct one for which the condition above holds, and as a consequence she would know Bob's $k$. It is then mandatory for Bob to choose bases having the same Weil pairing.
+\\
+In order to prevent this scenario, \cite{paper seedot} considers the \textit{XDSSI} problem and its computational intractability. Considering the protocol settings, the \textit{XDSSI} is equivalent to the the \textit{CSSI} problem \cite{paper seedot}. Since the latter is considered a hard problem then consequently the former \textit{XDSSI} is hard too and the presented protocol is secure with respect to Bob's secret $k$.
+%\\Finally we consider the case in which $E_{A, 0}$ and $E_{A, 1}$ may both be $3^m$-isogenous to $E_B'$. However, considering $k=0$ and $E_{A, 1}$ chosen at random by Alice, then Bob 
+%
+%
+%
+\subsubsection{Malicious Bob}
+Bob should not be able to decrypt Alice secrets other than $s_k$, or at least, gain information on her other secrets \cite{paper seedot}. In order to express that Bob obtains useful information on a secret or not, we consider a situation where the secret is selected randomly between two messages of his choice and ask if Bob can tell which one was selected.
+\begin{definition}{\textbf{Indistinguishability game for oblivious transfer}}
+Given a message's length $n$:
+\begin{itemize}
+    \item Bob sends Alice two couple of distinct messages $(m_0, m_0')$ and $(m_1, m_1')$ pf his choice, having the same length $n$;
+    \item Alice chooses randomly, uniformly and independently two bits $b_0$ and $b_1$, then sets
+    \begin{align*}
+        s_0 = \begin{cases}
+        m_0 \textit{ if } b_0 = 0\\
+        m_0' \textit{ if } b_0 = 1\\
+        \end{cases}
+        \text{and } \;
+        s_1 = \begin{cases}
+        m_1 \textit{ if } b_1 = 0\\
+        m_1' \textit{ if } b_1 = 1\\
+        \end{cases}
+    \end{align*}
+    
+    \item Alice and Bob perform the oblivious transfer protocol with $s_0$ and $s_1$;
+    \item Bob must answer whether $b_0=b_1$ or $b_0\ne b_1$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}{\textbf{Semantic security for an oblivious tranfer protocol}}
+An oblivious transfer protocol is semantically secure if for any polynomially-limited Bob, his advantage, defined as ``$\mathcal{P}$\textit{(c) - 1/2}'', where $\mathcal{P}$\textit{(c)} is the probability of answering correctly, is a polynomially-negligible function in the security parameter.
+\end{definition}
+Following the latter definition, Bob should not be able to extract meaningful information about both $s_0$ and $s_1$, or equivalently about both $b_0$ and $b_1$. Since they are bits, this means being able to answer correctly whether $b_0$ = $b_1$ or $b_0 \ne b_1$ with probability greater than $1/2$. If Bob is honest-but-curious, he can learn either $b_0$ or $b_1$, and the semantic security implies that he does not learn non-negligible information on the second bit, as expected. %If Bob is malicious, he could conceivably try to cheat during the protocol by sending invalid data, exchanging the certain knowledge of either $b_0$ or $b_1$ for a partial knowledge on both
+\\
+The practical security of oblivious transfer schemes depends on the underlying encryption and key derivation functions \textit{Enc} and \textit{KDF}, andthey cannot provide a perfect secrecy as it is the case for Bob’s secret $k$. Let us assume for the moment that \textit{Enc} combined with \textit{KDF} operates as a random oracle; in this model, Bob cannot gain any information on $s_0$ and $s_1$ if he does not know the encryption keys $j_0$ and $j_1$. Then, in order to obtain any information on both messages, Bob must be able to
+solve the \textit{2-inv-CSSI} problem and, consequently, recover both encryption keys.
+\\
+\\
+The assumption that the \textit{Enc} and \textit{KDF} act as a random oracle is unrealistically strong. It is more reasonable that they, combined, satisfy the e indistinguishability under chosen-plaintext attack (IND-CPA) property. Under this assumption Bob cannot tell apart the encryptions of $m_0$ and $m_0'$ (resp. $m_1$ and $m_1'$), with polynomially-limited resources if he does not have information on the respective encryption key. The security of the SIDH-based OT protocol in the IND-CPA model consequently relies on the assumption that Bob cannot produce a supersingular curve $E'$ and a basis $(U', V')$ for $E'[2^n]$ such that he has information on both $j_0$ and $j_1$. This is made precise in the \textit{2-inv-DSSI} problem. As in the oblivious transfer indistinguishability game, if the problem is hard then Bob cannot gain any useful information on the couple $(F_0, F_1)$ that does not come from information on only one of them separately.
+\begin{theorem}
+The SIDH-based OT is semantically secure if \textit{2-inv-DSSI} problem is hard and the underlying encryption scheme is IND-CPA.
+\end{theorem}
+
+
+
+
+
+
+
+
+
+
+%The security \cite{paper seedot} in the random oracle model relies on the hardness of the \textit{2-inv-CSSI} problem since if the generators of $ker(\phi_0)$ and $ker(\phi_1)$ can be efficiently computed, then it would be easy to obtain $x_0, y_0, x_1, y_1$ and solve the \textit{2-inv-CSSI}. A malicious Bob should solve the \textit{2-inv-CSSI} without computing $x_0, y_0, x_1, y_1$, that is, solving the \textit{CSSI}. In fact it would require to find a curve $E'$ and points $U', V'$ such that $U'$ (resp. $V'$) is related to both $U_0, U_1$ (resp. $V_0, V_1$). The problem described is precisely how the oblivious transfer works although it is expected to be computationally infeasible even on a quantum computer. \\There could be another way for Bob to break the scheme and it requires him to send Alice a pair $(U', V')$ that is not a $E'[2^n]$ basis. In this way Bob may choose a smaller basis thus limiting the possible values of $x_iU'+y_iV'$. For a small enough basis, it would be feasible for Bob to compute all the possible values of $x_iU'+y_iV'$. He would then be able to compute the curves all the possible curves of the form $F_j = E_B'\big / \left \langle x_iU'+y_iV' \right \rangle$, in particular he would find the curves $F_0$, $F_1$, the same computed by Alice! At this point Bob would need to compute the j-invariant for every curve $F_j$ and use them as \textit{seeds} for the \textit{KDF}. By applying each seed to each of Alice's secrets, Bob would eventually be able to decrypt all of her secrets. \\In order to avoid this situation, Alice should always perform a safety check on the received basis before proceeding further. \\ \\Ultimately it is assumed that the combination of the symmetric encryption scheme \textit{Enc} and the \textit{KDF} is IND-CPA (Indistinguishable under Chosen Plaintext Attack). In this case Bob is in the situation to guess whether his chosen secret is $b_0$ or $b_1$ hence he must solve the \textit{2-inv-DSSI} problem. Even though this problem is expected to be easier than its computational version \textit{2-inv-CSSI} there is no known reduction to the \textit{SSDDH} problem therefore the \textit{2-inv-DSSI} can be considered computationally intractable.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\chapter{Implementation details}
+\label{chapter implementation}
+As anticipated, the goal of this thesis was to implement the SIDH-based OT presented in the previous chapter. The implementation we have obtained strongly relies on the functions used in SIDH implementations. We have chosen the \textit{Supersingular Isogeny Key Encapsulation} (SIKE) library \cite{documentazione SIKE} as a starting point for our implementation. Along with said library, additional functions have been coded from scratch in order to reproduce the exact flow of the SIDH-based OT protocol.
+
+%
+%
+%
+\section{SIKE Library}
+This section briefly presents the SIKE library, a collection of functions that constitute the reference implementation of SIKE, the SIDH's variant submitted to the NIST competition. For all the information in this section and in Section \ref{suse x64} the reader can refer to \cite{documentazione SIKE}.
+\\
+The library consists in a collection of different base implementations: one for portable C; one for 64-bit computing platforms; two for embedded platforms ARM64 and FPGA; finally a simple textbook implementation. Many of these are protected against timing and cache attacks at the software level. Moreover the optimised x64 implementation is further subdivided into \textit{standard} and \textit{compressed} versions, both of them supporting four different parameters sets: $p_{434}$, $p_{503}$, $p_{610}$, $p_{751}$. The latter parameter sets are also found in compressed parameters sets and optimised, state-of-the-art, functions and strategies to achieve the highest possible speed ups. Ultimately, we chose to restrict our attention to the x64 optimised, compressed, implementation for parameter set $p_{503}$, which is called \textit{SIKEp503\_compressed}. This implementation allows us to easily and readily adapt our code to the other \textit{compressed} parameters sets $p_{434}$, $p_{610}$, $p_{751}$. Also, we chose the parameter set $p_{503}$ as a best trade-off between time and spacial complexities and security level guaranteed.
+%
+%
+%
+\subsection{x64 optimised, compressed implementations}
+\label{suse x64}
+SIKE's library is written in portable C and, in addition to the standard optimised version, provides public key compression.% and key encapsulation. 
+\\
+The compression is performed for both the static and ephemeral public keys.
+\\
+The uncompressed public key (resp. ciphertext) sizes corresponding to \textit{SIKEp434} and \textit{SIKEp503} are 330 and 346 (resp. 378 and 402) bytes, which is comparable to the 384-byte (3072-bit) RSA modulus that is conjectured to offer 128 bits of classical security. Likewise, \textit{SIKEp610} public key (resp. ciphertext) size is 462 (resp. 486) bytes, and the largest of the parameter sets, \textit{SIKEp751}, has 564-byte uncompressed public keys and 596-byte ciphertexts. The updated version of the SIKE protocol provided for the second round of NIST's competition enjoys a further public key and ciphertext compression; this reduces all of the above numbers to roughly $60\%$ of their former values, at the price of performance overheads ranging from 139\% to 161\% for public key generation, from 66\% to 90\% for encapsulation, and from 59\% to 68\% for decapsulation. Key encapsulation and decapsulation are extra steps, added to the standard SIDH scheme to obtain active security.% (i.e. against an adversary who is not only an eavesdropper). %Finally there are reduced public key sizes by $41\%$ and reduced ciphertext sizes by $39\%$.
+\\
+\\
+The implementation offers efficient algorithms for:
+\begin{itemize}
+    \item isogeny computations and tree traversing strategies, see Section \ref{isogeny_walk};
+    \item elliptic-curves computations using projective coordinates on Montgomery curves;
+    \item scalar multiplication via $3$-points Montgomery Ladder.
+\end{itemize}
+Field operations on $\mathbb{F}_{p^2}$ make use of Karatsuba and Lazy Reduction techniques \cite{documentazione SIKE}. Additionally this implementation is the same for all the security levels hence offers great code reuse.
+%
+%
+%
+%
+\\
+SIKE performances have been evaluated \cite{documentazione SIKE} with a benchmark test on a 3.4GHz Intel Core i7-6700 processor running Ubuntu 16.04.3 LTS; TurboBoost disabled, clang 3.8.0 with the command ``\textit{clang -03}''. Table \ref{tab:tabella performance SIKE} shows the comparison between the two x64 optimised implementations (the standard and the compressed one). For a memory analysis, in table \ref{tab:tabella memory performance SIKE} are reported the sizes in bytes of secret and public keys, ciphertexts and shared secrets used in SIKE.
+\begin{table}
+    \begin{tabularx}{\textwidth}{ c | c | c | c }
+         \textit{Scheme} & \textit{Key Generation} & \textit{Encapsulation} & \textit{Decapsulation}\\
+         \hline
+         \hline
+         \multicolumn{4}{l}{\textbf{Optimised standard implementations}}
+         \\
+         \hline
+         SIKEp434 & 6.487 & 10.536 & 11.297\\
+         SIKEp503 & 8.956 & 14.783 & 15.759 \\
+         SIKEp610 & 15.511 & 28.422 & 28.639 \\
+         SIKEp751 & 26.059 & 42.170 & 45.402 \\
+         \hline
+         \hline
+         \multicolumn{4}{l}{\textbf{Optimised compressed implementations}}
+         \\
+         \hline
+         SIKEp434\_compressed & 16.542 & 20.045 & 18.930 \\
+         SIKEp503\_compressed & 23.395 & 27.543 & 25.534 \\
+         SIKEp610\_compressed & 40.386 & 47.099 & 45.449 \\
+         SIKEp751\_compressed & 62.347 & 78.748 & 72.774 \\
+    \end{tabularx}
+    \caption{\label{tab:tabella performance SIKE}SIKE performances in thousands of clock cicles (rounded down)}
+\end{table}
+%
+%
+%
+\begin{table}
+    \begin{tabularx}{\textwidth}{ c | c | c | c | c}
+         \textit{Scheme} & \textit{Secret Key} & \textit{Public Key} & \textit{Ciphertext} & \textit{Shared Secret}
+         \\
+         \hline
+         \hline
+         \multicolumn{4}{l}{\textbf{Optimised standard implementations}}
+         \\
+         \hline
+         SIKEp434 & 374 & 330 & 346 & 16\\
+         SIKEp503 & 434 & 378 & 402 & 24 \\
+         SIKEp610 & 524 & 462 & 486 & 24 \\
+         SIKEp751 & 644 & 564 & 596 & 32\\
+         \hline
+         \hline
+         \multicolumn{4}{l}{\textbf{Optimised compressed implementations}}
+         \\
+         \hline
+         SIKEp434\_compressed &  239 & 196 & 209 & 16\\
+         SIKEp503\_compressed & 280 & 224 & 248 & 24 \\
+         SIKEp610\_compressed & 336 & 273 & 297 & 24 \\
+         SIKEp751\_compressed & 413 & 331 & 363 & 32 \\
+    \end{tabularx}
+    \caption{\label{tab:tabella memory performance SIKE}SIKE inputs and outputs sizes in bytes}
+\end{table}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsection{Implementation Choices}
+Most concrete parameters used in our implementation of the SIDH-based OT come from the SIKE library due to its high performances and optimisation. Therefore, in this section we are going to describe SIKE's choices and so, by reflection, ours. For the entirety of this section, the reader can refer to \cite{weil pairing ottimizzato}.
+%
+%
+%
+\subsubsection{Smooth-Order Supersingular Elliptic Curves}
+Prime numbers of the form $p = l_A^{e_A}l_B^{e_B}\pm1$ have bases $l_A = 2$ and $l_B = 3$ fixed, the exponents are chosen such that the resulting numbers $2^{e_A}$ and $3^{e_B}$ have bit lengths slightly smaller than multiples of 64. This choice allows to have $2^{e_A} \approx 3^{e_B}$ in order to ensure that attacking one party is not considerably easier than attacking the other. This also serves to balance the computational costs for each party without disadvantaging either. These choices also support efficient arithmetic on many platforms and allow a large variety of optimisations. Among all, it is well-known that prime numbers having a special form (like the former just described above) can improve algorithm performances of the underlying modular arithmetic.
+\\
+As a brilliant side effect, these primes ease the construction of supersingular elliptic curves $E$ over $\mathbb{F}_{p^2}$ having smooth order $(l_A^{e_A}l_B^{e_B})^2$. Given $l\in \{l_A, l_B\}$ and $e\in \{e_A, e_B\}$, the entire $l^e$-torsion group on $E$ is contained in $E(\mathbb{F}_{p^2})$ since $l$ is coprime to $p$ and $E[l^e] \simeq (\mathbb{Z}\big / l^e\mathbb{Z})^2$. Let $(P,Q) \in E[l^e]$  be a basis of order $l^e$ such that the map $\phi : (\mathbb{Z}\big / l^e\mathbb{Z})^2 \to E[l^e]$, defined by $\phi(m, n) = [m]P+[n]Q$ is an isomorphism (see Section \ref{section m-torsion groups}). SIDH secret keys are the $l^e$-isogenies originating from $E$ which are, in turn, in one-to-one correspondence with the cyclic subgroups of order $l^e$ in $E(\mathbb{F}_{p^2})$. We note that a point $[m]P+[n]Q$ has full order $l^e$ if and only if at least either $m$ or $n$ are coprime with $l$.%: there exist $l^{2 e -2}(l^2-1)$ such points and $l^{e-1}(l+1)$ distinct cyclic subgroups of order $l^e$.
+%
+%
+%
+\subsubsection{Avoid Inversions}
+The idea behind the use of Montgomery projective curves is to exploit the combination of two techniques aiming at minimising the number of \textit{inversions} throughout the entire implementation, which are high cost operations. First we consider elliptic curves in a projective form, then we exploit the fast arithmetic of Montgomery curves to efficiently compute the necessary elliptic curve points. Following the notations introduced in Section \ref{sec Important concepts}, using Montgomery projective curves it is possible to code more compact algorithms ultimately achieving:
+\begin{itemize}
+    \item faster elliptic-curve arithmetic by ignoring the $Y$ projective coordinate;
+    \item faster and more efficient isogeny arithmetic by ignoring the Montgomery curve coefficient $B$ and working with the pair $(A:C)\in \mathbb{P}^1$;
+    \item key generation with only one inversion instead of three;
+    \item shared secret (j-invariant) computation with only two inversions. %in the function $j\_inv:(A:C)\to j(E_{(A:B:C)})$.
+\end{itemize}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsubsection{Projective Isogenies}
+With this section we want to briefly summarise isogeny computations in the SIKE library, which are also used in our implementation. 
+\\
+The fundamental building blocks are $3$- and $4$-degree isogenies. Starting with the $3$-isogenies case we define:
+\begin{itemize}
+    \item the supersingular elliptic curve $E_{(A:C)}$ expressed in projective Montgomery form;
+    %
+    \item the affine $x$-coordinate $x(P)=(X_3:Z_3)\in\mathbb{P}^1$ of the point $P=(X_3:Y_3:Z_3)$ having order $3$ in $E_{(A:C)}$;
+    %
+    \item the supersingular elliptic curve $E'_{(A':C')} = E_{(A:C)} \big / \langle P \rangle$;
+    %
+    \item the $3$-isogeny $\phi:E_{(A:C)}\to E'_{(A':C')}$ having $\left \langle P \right \rangle$ has kernel;
+    %
+    \item the point $Q\in E_{(A:C)}$ such that $Q \notin ker (\phi)$, its affine $x$-coordinate $x(Q)=(X:Z)\in \mathbb{P}^1$ and its image $x(\phi(Q))=(X':Z')\in \mathbb{P}^1$
+\end{itemize}
+In the isogeny computation, two functions are used: \textit{get\_3\_isog} which computes the isogenous curve $E'_{(A':C')}$ only and \textit{eval\_3\_isog} to evaluate an isogeny on a single point. The first function takes the curve $E_{(A:C)}$ and the projective coordinates $(X_3:Z_3)$ of the point $P$ as input and outputs the $3$-isogenous curve $E'_{(A':C')}$. This curve is computed by the formula:
+\begin{align*}
+    (A':C') = 
+    \big ( 
+        (AX_3Z_3+6(Z_3^2-X_3^2))X_3 : CZ_3^3
+    \big )
+\end{align*}
+which is dependent from $E_{(A:C)}$ coefficients and it requires 3 multiplications, 2 squaring, 8 additions. Using a common notation we could also write 3\textbf{M}+2\textbf{S}+8\textbf{a} for the number of required operations, where \textbf{M} stands for Multiplication, \textbf{S} for Squaring, \textbf{a} for Addition, eventually \textbf{I} for Inversion. 
+\\
+To evaluate the point $Q$ through the isogeny going from $E_{(A:C)}$ to $E_{(A':C')}'$ with kernel $P$, by \textit{eval\_3\_isog}, the formula is:
+\begin{align*}
+    (X':Z') = 
+    \big ( 
+        X(X_3X-Z_3Z)^2 : Z(Z_3X-X_3Z)^2
+    \big )
+\end{align*}
+requiring 6\textbf{M}+2\textbf{S}+2\textbf{a} operations.
+\\
+\\
+For discussing $4$-isogenies we can reuse the above notations and only replace the point $P$ with a point of order $4$ in $E_{(A:C)}$ with affine $x$-coordinate $x(P)=(X_4:Z_4)\in\mathbb{P}^1$. The following formulae consider a curve $E_{(A:C)}$ normalised so that $A=a$, $C=1$ where $a$ is the coefficient of the Montgomery curve in affine form. 
+\\
+For the first $4$-isogeny, the image curve $E'_{(A':C')}$ is computed as:
+\begin{align*}
+    (A':C') = 
+    \big ( 
+        2(a+6) : a-2
+    \big )
+\end{align*}
+while the image of a point $Q \in E_{(A:C)} \setminus \left \langle P \right \rangle$ through the isogeny going from $E_{(A:C)}$ to $E_{(A':C')}'$ with kernel $\left \langle P \right \rangle$ is:
+\begin{align*}
+    (X':Z') = 
+    \big ( 
+        (X+Z)^2(aXZ+X^2+Z^2) : (2-a)XZ(X-Z)^2
+    \big )
+\end{align*}
+requiring 4\textbf{M}+2\textbf{S}+9\textbf{a} operations.
+\\
+%
+%
+%
+\\
+For all the other $4$-isogenies from a curve $E_{(A:C)}$ to a curve $E_{(A':C')}'$ with kernel $\left \langle P \right \rangle$, where $x(P) = (X_4:Z_4)$, we get:
+\begin{align*}
+    (A':C') = 
+    \big ( 
+        2(2X_4^4-Z_4^4) : Z_4^4
+    \big )
+\end{align*}
+while the image of a point $Q \in E_{(A:C)} \setminus \left \langle P \right \rangle$ through the isogeny going from $E_{(A:C)}$ to $E_{(A':C')}'$ with kernel $\left \langle P \right \rangle$ is:
+\begin{align*}
+    (X':Z') = 
+    \Big ( 
+        & X \big(2X_4Z_4Z - X(X_4^2 + Z_4^2)\big) (X_4X - Z_4Z) \: : \\
+        & Z \big(2X_4Z_4X - Z(X_4^2 + Z_4^2)\big) (Z_4X - X_4Z)
+    \Big )
+\end{align*}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\subsubsection{Bases and Torsion Points}
+Throughout the SIDH protocol, Alice and Bob  make use of two particular bases: Alice's basis is $(P_A, Q_A)$ for points of order $2^n$ and Bob's $(P_B, Q_B)$ for points of order $3^m$. To better explain how these bases can be computed we are going to follow the example in \cite{weil pairing ottimizzato} thus we set $n=372$, $m=239$. 
+\\
+Let $P_A \in E(\mathbb{F}_p)[2^{372}]$ be a point described as $[3^{239}](z, \sqrt{z^3+z})$ where $z$ is the smallest positive integer such that $\sqrt{z^3+z} \in \mathbb{F}_p$ then, it is possible to prove that $P_A$ is of order $2^{372}$. To compute the second point $Q_A$ we use a distortion map $\tau : E(\mathbb{F}_p)[2^{372}] \to E(\mathbb{F}_p)[2^{372}], \, (x, y) \to (-x, iy)$ where $i^2 = -1$ and $i \in \mathcal{F}_{p^2} \setminus \mathcal{F}_{p}$ provided that $p \equiv 3 (mod 4)$, then $Q_A = \tau(P_A)$. Bob's basis is found similarly but considering points of order $3^{239}$. 
+\\ 
+\\
+To sample a $2^{372}$-order point $R_A \in E(\mathbb{F}_p)[2^{372}]$, it is sufficient to choose a random integer $m' \in \{1, 2, \ldots, 2^{371}-1\}$ and set $R_A = P_A + [2m']Q_A$. 
+\\
+A similar approach is used to sample $3^{239}$-order points: choose a random integer $m' \in \{1, 2, \ldots, 3^{238}-1\}$ and set $R_B = P_B + [3m']Q_B$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\section{SIDH-based OT implementation}
+\label{seedot implem}
+In this section we will comment our implementation of the SIDH-based OT scheme, that was the main goal for this thesis. 
+\\
+The entire protocol requires less than 100 lines of code but many functions had been adapted from the SIKE's library or newly added to achieve our purpose. For a closer look to our algorithms we will refer to (appendix \ref{chapter algos}); for the further underlying implementation the reader can still refer to SIKE's library \cite{documentazione SIKE}.
+%
+%
+%
+%
+%
+%
+\subsubsection{Initial settings}
+In order to exploit the SIKE's library, the first thing required is to include the header files \textit{api.h}, \textit{config.h}, \textit{Pxxx\_internal.h} and the C file \textit{Pxxx.c} in our \textit{main} program. The ``\textit{Pxxx}'' stands for a specific optimised and compressed set of parameters, which also fix a starting elliptic curve.
+\\
+\\
+The protocol's public parameters have been set as follows:
+\begin{itemize}
+    \item The starting supersingular elliptic curve $E$ defined over $\mathbb{F}_{p^2}$ is hard-coded in the \textit{Pxxx.c} file chosen at compile time;
+    \item The basis $(P, Q)$ of $E[3^m]$ is hard-coded according to the \textit{Pxxx.c} file chosen;
+    \item The secure symmetric encryption protocol \textit{Enc} and the key derivation function \textit{KDF} are coded into a single function, see Algorithm \ref{enc}, in the main program. Our \textit{KDF} is the \textit{shake256} function from the NIST publication \cite{sha3} regarding SHA3. The \textit{Enc} function is a simple bitwise XOR operation.
+\end{itemize}
+%
+%
+%
+The \textit{main} program has been designed to adhere to the $\binom{2}{1}$-OT but it is possible to obtain the generic $\binom{s}{1}$-OT upon running the SIDH-based OT implementation without the need to recompile it. %We have used the letter \textit{s} for the generic OT in order to avoid confusion when we will introduce Alice bases having order $2^n$.
+\\
+Finally, four constants have been used to fully describe a Montgomery curve. Among those defined in Section \ref{mont constants}, we used only $(A_{24}^+:C_{24})$ computed accordingly to SIKE's library: $A_{24}^+ = A+2C$, $C_{24} = 4C$ where $A=6$ and $C=1$ for any set of parameters.
+%
+%
+%
+%
+%
+%
+\subsubsection{Part 1 - Alice}
+Alice initial settings require her to generate from \textit{two} up to \textit{s} secrets, according to the OT version chosen.
+\\
+We have introduced three main functions:
+\begin{itemize}
+    \item The first one generates \textit{two} (resp. \textit{s}) bases $(R_i, T_i)$ for $E[2^n]$, with $i = 0, 1$ (resp. $i = 0, \ldots, s-1$), by adapting and exploiting the SIKE's function \textit{get\_2\_torsion\_entangled\_basis\_compression};
+    %
+    \item The second function computes the projective difference $T_i - R_i$ for each of Alice's bases in order to fully exploit the optimisation for isogeny computation as implemented in the SIKE's library;
+    %
+    \item Finally the third and last function Algorithm \ref{2n isogeny curve} computes \textit{two} (resp. \textit{s}) isogenous curves $E_{A,i} = E \big / \left \langle R_i \right \rangle$, via the isogenies $\phi _{A,i} : E \to E_{A,i}$. For each one of these curves, four points are also computed which will be required further on. Three of these points represent the image of public base $(P, Q)$ of $E(\mathcal{F}_{p^2})[3^m]$  and their difference: $\phi _{A,i} (P)$, $\phi _{A,i} (Q)$, and $\phi _{A,i} (Q-P)$. The last point is the image of $T_i$ by $\phi _{A,i}$, namely $\phi _{A,i} (T_i)$.
+\end{itemize}
+For computing the isogenies we rely on SIKE's library and on ad-hoc adaptations based on the required output. Each isogeny is obtained following the idea given in Section \ref{walk strategies}.
+%
+%
+%
+%
+%
+%
+\subsubsection{Part 2 - Bob}
+Bob starts with choosing a random integer $k$ out of \textit{two} (resp. $s$) and computing the point $P+bQ$, with $b$ uniformly chosen in $\mathbb{Z}\big /3^m\mathbb{Z}$. Now he is able to compute the curve $E_B = E\big/\left \langle P+bQ \right \rangle$ and its j-invariant $j_B$. The function Algorithm \ref{3m isogeny curve only} to compute the isogenous curve $E_B$ has a different implementation compared to Algorithm \ref{2n isogeny curve} used by Alice. In this case the kernel is generated by a cyclic subgroup of order $3^m$: this affects how the isogeny's traversing strategy is evaluated. Moreover we have now a sequence of \textit{m} $3$-isogenies and no image points are computed nor returned, since not required. This fact speeds up our function when compared to SIKE's one for $3$-isogenies.
+\\
+\\
+The next step is to choose \textit{two} (resp. \textit{s}) bases for $E_{A, 0}[2^n]$ and $E_{A, 1}[2^n]$ respectively, namely $(U_i, V_i)$, all having the same Weil pairing. We have coded the necessary functions, loops and checks in order to meet the latter requirements. In particular: two new functions have been implemented and two have been modified. The SIKE function to compute the Weil pairing is rather generic and allows for computing pairings of any order. Following Section \ref{sec weil ottimizzato}, we took every basis $(U_i, V_i)$ and multiplied each of its points by $2^{n-1}$, obtaining $([2^{n-1}]U_i, [2^{n-1}]V_i)$, allowing us to use a simple pairing of order 2. For each basis it has been mandatory also to compute the difference $V_i-U_i$ as it is required in the next steps.
+\\
+At this point Algorithm \ref{2n isogeny curve and points} is used to compute the last curve of Bob i.e., $E_B' \simeq E_{A, k}\big/\left \langle P_k+bQ_k \right \rangle$ and his last isogeny $\phi_B' = E_{A, k} \to E_B'$. To compute the isogeny, first the point $P_k+bQ_k$ is computed and then a new function is used for the isogeny. In this case, the function required three additional input points $U_k, \, V_k, \, V_k-U_k$ and to return their images $U_k'=\phi_B'(U_k)$, $V_k'=\phi_B'(V_k)$, and $\phi_B'(V_k-U_k)$. 
+%
+%
+%
+%
+%
+%
+\subsubsection{Part 3 - Alice}
+Alice now has to find \textit{two} (resp. \textit{s}) linear combinations, having integral coefficients $x_i$, $y_i$ such that $\phi_{A,i}(T_i)=x_iU_i+y_iV_i$. To approach this problem one may choose to set a value for $x_i$ and increment $y_i$ while the condition above does not hold. In a similar way, we opted to randomly choose values for both the terms until they do not meet the condition above Algorithm \ref{linearCombination}. Both approaches have the great drawback of requiring $\mathcal{O}(2^n)$ operations therefore being computationally intractable. For the moment we decided to select the first random values obtained leaving this problem to future developments.
+\\
+\\
+Now, the \textit{two} (resp. \textit{s}) isogeny kernels $x_iU_k'+y_iV_k'$ are used to obtain the final curves $F_i = E_B'\big/\left \langle x_iU_k'+y_iV_k' \right \rangle$, exploiting yet another ad-hoc function, named Algorithm \ref{2n isogeny curve only}. In this case we only focused on computing the isogenous curve bypassing all supplementary points and corresponding images. 
+\\
+Only two operations remain at this point: computing the j-invariants of the curves $F_i$ and then encrypting Alice secrets with the \textit{Enc} function. The former operation strictly relies on SIKE's library, the latter is a new function that we implemented.
+\\
+The \textit{Enc} function Algorithm \ref{enc} takes two parameters, a secret and a j-invariant, and returns the encrypted secret. Obviously we may pass a ciphertext to the function and get the corresponding plaintext as output, this feature makes the function symmetric and does not require additional functions. Lastly, we used the j-invariant parameter to generate a seed via the \textit{shake256} function provided in SIKE's library and based on SHA-3 implementation \cite{sha3}.
+%
+%
+%
+%
+%
+%
+\subsubsection{Part 4 - Bob}
+This final part is simply another application of the \textit{Enc} function Algorithm \ref{enc} in which Bob inputs the $k$-th Alice's encrypted secret and his j-invariant $j_B$. Obtaining the $k$-th Alice's decrypted secret. The protocol is now completed.
+%
+% 
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\chapter{Conclusions and Future Development}
+In this thesis we have studied thoroughly the paper \cite{paper seedot} of Vanessa Vitse and we have obtained the first implementation of her newly designed protocol. To accomplish our goal we had to face several difficulties many of which are now overcome and only few of them still remain unsolved but we hope to properly address them in future developments. 
+\\
+We have been able to study and use the best state-of-the-art optimisations for implementing the isogeny-based schemes deduced from SIDH. In particular, we have exploited and adapted one of the best known post-quantum software library, i.e. SIKE's library. Finally, we have implemented the SIDH-based OT protocol in such a general way to automatically adapt to every other curve SIKE's library may introduce in the future.
+\\
+\\
+The main issue that still requires to be solved is how to correctly and efficiently compute the coefficients of the linear combination $\phi(T) = xU+yV$ to complete Alice's part in the protocol. Minor changes can still be applied, as for example: 
+optimising the \textit{C} implementation's \textit{Makefile} file to better take advantage of SIKE's library and our compiled program; 
+optimising functions' imports and inclusions;
+standardising the point coordinates to the projective short form $(X:Z)$ only; 
+avoiding frequent variable conversions between different functions; 
+writing more of our own functions to better fit our requirements.
+\\
+\\
+Finally it would be interesting to implement different post-quantum Oblivious Transfer protocols and benchmark them. 
+\\
+First of all we may cite a second Vanessa Vitse's idea \cite{paper seedot} based on the exponentiation-only OT scheme of Wu-Zhang-Wang \cite{wuz}. This protocol is hard to implement since it requires to efficiently sample random supersingular elliptic curves over a given finite field. A standard solution is to run a random isogeny walk, starting from a known supersingular curve but the entity running the isogeny walk always knows the path connecting it to the starting curve; this may be a problem in some applications.
+\\
+\\
+Another protocol to implement would be the Supersingular Isogeny Oblivious Transfer described in \cite{f1}. In a way similar to SIDH (see Section \ref{section sidh}), the public parameters are: a supersingular elliptic curve $E$ defined over $\mathcal{F}_{p^2}$; the bases $(P_A, Q_A)$ for $E[l_A^{e_A}]$, $(P_B, Q_B)$ for $E[l_B^{e_B}]$, $(U, V)$ for $E_B[l_A^{e_A}]$; a symmetric encrypting function \textit{Enc} as also requested in Section \ref{section seedot}.
+\\
+Alice chooses a random integer $r_A \in \mathbb{Z}\big / l_A^{e_A}\mathbb{Z}$ and computes and sends to Bob her public key $pk_A = \{E_A , G_A, H_A \}$,
+with the isogenous curve $E_A = E\big / \left \langle P_A+r_AQ_A\right \rangle$ and two image points $G_A = \phi_A(P_B)$, $H_A = \phi_A(Q_B)$. 
+Bob chooses a random integer $r_B \in \mathbb{Z}\big / l_B^{e_B}\mathbb{Z}$ and computes his first public key $pk_B = \{E_B , G_B, H_B \}$ in a similar way to Alice. He also picks a bit $\sigma \in \{0, 1\}$. Lastly, he computes and sends to Alice his second public key as $\hat{pk}_B = \{E_B , G_B-\sigma U, H_B -\sigma V\}$. 
+Alice computes the isogeny $\phi_{A_i}^{'}:E_B \to E_{BA_i}$ for each $i \in \{0, 1\}$, where $E_{BA_i} = E_B \big /\left \langle (G_B-\sigma U+iU) + r_A(H_B -\sigma V +iV)\right \rangle$. At this point she encrypts her $i$-th secret using the j-invariant of $E_{BA_i}$ and send all her encrypted secrets to Bob. The protocol terminates with Bob been able to decrypt the $\sigma$-th secret using the j-invariant of $E_AB = E_A \big / \left \langle (G_A+r_BH_A)\right \rangle$.
+\\
+This protocol shows no difficult implementation problems at first glance and could be faster than Vitse's SIDH-based OT since it does not require to generate random bases at run time, nor to compute any linear combinations as our Algorithm \ref{linearCombination}.
+\\
+\\
+Other isogeny-based OT protocols can be found in literature that could compete with the SIDH-based OT considered in this thesis. For example, two oblivious transfer protocols are described in \cite{f2} but both require additional mathematical knowledge than what we presented in Section \ref{sec Important concepts}, hence falling beyond the scope of this thesis.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\chapter*{Acknowledgements}
+Two years ago, I could hardly imagine to get here like I am today. My goals and determination have brought me far through this master degree but much much more I owe to all the people who have been around me this time.
+\\
+First of all I believe my parents deserve a big thank for always being supportive in my decisions, and to my sisters for holding me tight to their hearts.
+\\
+Secondly, I find it necessary to, at least, mention my professors Riccardo and Federico for helping me greatly in this thesis, Norberto Gavioli for giving tips from time to time and Gabriele Di Stefano for having me introduced into elliptic curves cryptography and still being earnestly interested in my personal growth.
+\\
+\\
+I feel necessary to give a big shoutout %to simpleflips -> Gab
+to all the friends I met and are close to me. Even if anti climatic I am grateful for some exam circumstances for letting me sympathise with new fellowships %Antonio e successivamente Andrea
+giving me a jump start %riferimento più chiaro a Jump
+into the first lessons.
+\\
+Roommates friends: genius, %Michele e Angelo
+somewhat funny, %Fede e Fanny
+comprehensive and wise %Alex, Marco e un po' tutti
+have been at my side, helping me and bearing me all day, all days. Good friends come along good friends. %Tommaso
+A blessed friend, %Benedetta
+neverending boon so kind yet sometime short-tempered, ceaselessly there for me; the sun on the horizon line. Faraway friends, separated by distance but 
+everlasting, %Simone
+old, %Adriano
+great, %Luca 
+best %Leo
+friends, always at arm's reach.
+\\
+\\
+I love all of you. 
+\\
+And my newly catched Sylveon.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\bibliografia{tesi}
+\begin{thebibliography}{99}
+    
+    %1
+    \bibitem{PQC schemes}
+        Heyse, S. (2013). Post quantum cryptography: implementing alternative public key schemes on embedded devices. Doctorat, Bochum Germany.
+      
+    %2
+    \bibitem{PQC general}
+        Szepieniec, A. (2018). Mathematical and Provable Security Aspects of Post-Quantum Cryptography.
+        
+    %3
+    \bibitem{PQC T2M-like}
+       Mosca, M. (2018). Cybersecurity in an era with quantum computers: will we be ready?. \textit{IEEE Security \& Privacy, 16(5)}, 38-41.
+    
+    %4
+    \bibitem{PQC development}
+        Legernæs, M. W. (2018). \textit{On the Development and Standardisation of Post-Quantum Cryptography-A Synopsis of the NIST Post-Quantum Cryptography Standardisation Process, its Incentives, and Submissions} (Master's thesis, NTNU).
+
+    %5
+    \bibitem{Shor's algo}
+        Shor, P. W. (1999). Polynomial-time algorithms for prime factorization and discrete logarithms on a quantum computer. \textit{SIAM review, 41}(2), 303-332.
+    
+    %6
+    \bibitem{deFeo math of isogeny}
+        De Feo, L. (2017). Mathematics of isogeny based cryptography. \textit{arXiv preprint arXiv:1711.04062.}
+    
+    %7
+    \bibitem{weil pairing ottimizzato}
+        Costello, C., Longa, P., \& Naehrig, M. (2016, August). Efficient algorithms for supersingular isogeny Diffie-Hellman. In \textit{Annual International Cryptology Conference} (pp. 572-601). Springer, Berlin, Heidelberg.
+    
+    %8
+    \bibitem{montgomery speed up}
+        Costello, C., \& Smith, B. (2018). Montgomery curves and their arithmetic. \textit{Journal of Cryptographic Engineering, 8}(3), 227-240.
+    
+    %9
+    \bibitem{paper seedot}
+        Vitse, V. (2019). Simple oblivious transfer protocols compatible with Kummer and supersingular isogenies.
+    
+    %10
+    \bibitem{isogenie de feo} %"4 - Isogenie"/"0 - isogenie 1 - De Feo"
+        Luca De Feo. (2018). Isogeny based crypto: what’s under the hood?
+        
+    %11
+    \bibitem{documentazione SIKE} %"4 - Isogenie"/"5 - Formule isogenie"
+        Jao, D. (2019). Supersingular isogeny key encapsulation 2019. \textit{NIST Round, 2}.
+    
+    %12
+    \bibitem{hard problems}
+        De Feo, L., Jao, D., \& Plût, J. (2014). Towards quantum-resistant cryptosystems from supersingular elliptic curve isogenies. \textit{Journal of Mathematical Cryptology, 8}(3), 209-247.
+    
+    %13
+    \bibitem{fede sidh problem}
+        Federico Pintore, (2019). Cryptographic primitives from elliptic curve isogenies. \textit{De Cifris Athesis}
+    
+    %14
+    \bibitem{sidh attack uno}
+        Petit, C. (2017, December). Faster algorithms for isogeny problems using torsion point images. In \textit{International Conference on the Theory and Application of Cryptology and Information Security} (pp. 330-353). Springer, Cham.
+    
+    %15
+    \bibitem{sidh attack due}
+        Galbraith, S. D., Petit, C., Shani, B., \& Ti, Y. B. (2016, December). On the security of supersingular isogeny cryptosystems. In \textit{International Conference on the Theory and Application of Cryptology and Information Security} (pp. 63-91). Springer, Berlin, Heidelberg.
+    
+    %16
+    \bibitem{sidh attack tre}
+        Longa, P. (2018). A Note on Post-Quantum Authenticated Key Exchange from Supersingular Isogenies. \textit{IACR Cryptology ePrint Archive, 2018}, 267.
+    
+    %17
+    \bibitem{sidh security parameters}
+        Cid, C., \& Jacobson Jr, M. J. (Eds.). (2019). \textit{Selected Areas in Cryptography–SAC 2018: 25th International Conference, Calgary, AB, Canada, August 15–17, 2018, Revised Selected Papers} (Vol. 11349). Springer.
+    
+    %18
+    \bibitem{aes libro}
+        Daemen, J., \& Rijmen, V. (2002). The design of Rijndael. Information security and cryptography.
+    
+    %19
+    \bibitem{rsa libro}
+        Rivest, R. L., Shamir, A., \& Adleman, L. (1978). A method for obtaining digital signatures and public-key cryptosystems. \textit{Communications of the ACM}, 21(2), 120-126.
+    
+    %20
+    \bibitem{ecc libro}
+        Certicom. (2004). An Elliptic Curve Cryptography (ECC) Primer. \textit{Certicom Research}.
+        
+    %21
+    \bibitem{libro deutsch quantum}
+        Deutsch, D. (1985). Quantum theory, the Church–Turing principle and the universal quantum computer. \textit{Proceedings of the Royal Society of London. A. Mathematical and Physical Sciences, 400}(1818), 97-117.
+    
+    %22 questo è fatto bene. consulta http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.132.3788 per citare bene la roba
+    \bibitem{ecc formula base}
+        Jurišic, A., \& Menezes, A. (1997). Elliptic curves and cryptography. \textit{Dr. Dobb’s Journal}, 26-36.
+        
+    %23
+    \bibitem{ottimo su teoria EC}
+        Silverman, J. H. (2009). \textit{The arithmetic of elliptic curves} (Vol. 106). Springer Science \& Business Media.
+    
+    %24
+    \bibitem{appunti inutili se non per punti EC uguale gruppo}
+        Silverman, J. H. (2006). An introduction to the theory of elliptic curves. \textit{Brown University. June, 19}.
+        
+    %25
+    \bibitem{ottimo per puntiGruppo e Weil pairing}
+        Christophe Ritzenthaler, (2014). Introduction to elliptic curves. Université de Rennes I.
+        
+    %26
+    \bibitem{isogeny graphs}
+        Luca De Feo, (2019). Isogeny Graphs in Cryptography. Université Paris Saclay, UVSQ.
+        
+    %27
+    \bibitem{A24C24 p1}
+        Costello, C., \& Hisil, H. (2017, December). A simple and compact algorithm for SIDH with arbitrary degree isogenies. In \textit{International Conference on the Theory and Application of Cryptology and Information Security} (pp. 303-329). Springer, Cham.
+       
+    %28
+    \bibitem{nascita ot}
+        Even, S., Goldreich, O., \& Lempel, A. (1985). A randomized protocol for signing contracts. \textit{Communications of the ACM}, 28(6), 637-647.
+        
+    %29
+    \bibitem{rsa piu usato di ecc}
+        Kute, V. B., Paradhi, P. R., \& Bamnote, G. R. (2009). A software comparison of rsa and ecc. \textit{Int. J. Comput. Sci. Appl, 2}(1), 43-59.
+        
+    %30
+    \bibitem{m1}
+        Bosamia, M., \& Patel, D. (2018). Current Trends and Future Implementation Possibilities of the Merkel Tree. \textit{International Journal of Computer Sciences and Engineering, 6}(8), 294-301.
+    
+    %31
+    \bibitem{m2}
+        Zhang, W., \& Tan, C. H. (2015, December). MI-T-HFE, a new multivariate signature scheme. In \textit{IMA International Conference on Cryptography and Coding} (pp. 43-56). Springer, Cham.
+    
+    %32
+    \bibitem{m3}
+        Sendrier, N. (2011). Niederreiter Encryption Scheme. 842-843.
+    
+    %33
+    \bibitem{m4}
+        Biswas, B., \& Sendrier, N. (2008, October). McEliece cryptosystem implementation: Theory and practice. In \textit{International Workshop on Post-Quantum Cryptography} (pp. 47-62). Springer, Berlin, Heidelberg.
+    
+    %34
+    \bibitem{l1}
+        Hoffstein, J., Pipher, J., \& Silverman, J. H. (1998, June). NTRU: A ring-based public key cryptosystem. In \textit{International Algorithmic Number Theory Symposium} (pp. 267-288). Springer, Berlin, Heidelberg.
+        
+    %35
+    \bibitem{rabinot}
+    Rabin, M. (1981). \textit{How to exchange secrets by oblivious transfer. Harvard Aiken Comp. Lab}. TR-81.
+        
+    %36
+    \bibitem{sha3}
+    Kelsey, J., Chang, S. J., \& Perlner, R. (2016). \textit{SHA-3 derived functions: cSHAKE, KMAC, TupleHash, and ParallelHash} (No. NIST Special Publication (SP) 800-185 (Draft)). National Institute of Standards and Technology.
+    
+    %37
+    \bibitem{mont lad}
+    Bernstein, D. J., \& Lange, T. (2017). Montgomery curves and the Montgomery ladder. \textit{IACR Cryptology ePrint Archive, 2017}, 293.
+    
+    %38
+    \bibitem{wuz}
+    Wu, Q. H., Zhang, J. H., \& Wang, Y. M. (2003, October). Practical t-out-n oblivious transfer and its applications. In \textit{International Conference on Information and Communications Security} (pp. 226-237). Springer, Berlin, Heidelberg.
+    
+    %39
+    \bibitem{f1}
+    Barreto, P., Oliveira, G., \& Benits, W. (2018). Supersingular isogeny oblivious transfer. \textit{arXiv preprint arXiv:1805.06589}.
+    
+    %40
+    \bibitem{f2}
+    de Saint Guilhem, C., Orsini, E., Petit, C., \& Smart, N. P. (2018). Secure Oblivious Transfer from Semi-Commutative Masking. \textit{IACR Cryptology ePrint Archive, 2018}, 648.
+\end{thebibliography}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\appendice
+\chapter{Algorithms}
+\label{chapter algos}
+In this chapter we report the algorithms used in our implementation of the isogeny-based OT scheme discussed in Section \ref{seedot implem}. Before we begin, we list the fundamental \textit{structs} and variable \textit{types} used in the implementation, for which we strictly follow the naming system from SIKE's library.
+\begin{itemize}
+    %
+    \item \textbf{digit\_t}: it represents an unsigned 32- or 64-bit integer. The bitlength depends on the machine the protocol is built on;
+    %
+    \item \textbf{felm\_t}: acronym of field element, this is an array of \textit{digit\_t} and its length depends on the machine the protocol is built on;
+    %
+    \item \textbf{f2elm\_t}: array of two \textit{felm\_t}. This is used to represent elements of the quadratic extension $\mathcal{F}_{p^2}$, having both real and complex parts;
+    %
+    \item \textbf{point\_proj\_t}: it is a struct having two \textit{f2elm\_t} representing a point $P$ on an elliptic curve. This struct is for the projective short form of $P$ consisting in only $(X:Z)$ coordinates;
+    %
+    \item \textbf{point\_full\_proj\_t}: similarly to \textit{point\_proj\_t}, it represents a point $P$ (on an elliptic curve) in a more complete form, namely projective full form, consisting in the triple $(X:Y:Z)$. This struct is rarely used since the $Y$ coordinate can be easily computed from the curve's equation and $X$, $Z$ coordinates;
+    %
+    \item \textbf{point\_t}: this is the affine analogous of \textit{point\_proj\_t} and, in fact, represents the $x$ and $y$ affine coordinates of a generic point on an elliptic curve.
+    %
+\end{itemize}
+%
+%
+%
+%
+%
+Algorithm \ref{2n isogeny curve only} is a lighter implementation of SIKE's \textit{2\_e\_iso}. Its inputs are the initial curve constants $(A_{24}^+$, $C_{24})$ and an elliptic curve point $K$ generating the isogeny's kernel. The algorithm simply computes a $2^n$-isogeny returning only the image curve's coefficients $A_{24}^{+'}$, $C_{24}^{'}$. The function \textit{4\_iso\_curve} in line 3 is the same as SIKE's and computes the $4$-isogenous \textit{curve} to the input curve. Once it is put inside the \textit{for} loop (line 1) this function effectively traverse the isogeny path, following a hard-coded traversing strategy, eventually leading to the $2^n$-isogenous curve.
+\begin{algorithm}
+\caption{\textit{get\_2n\_isogenousCurve\_Only}}
+    %\algrule
+    \hspace*{\algorithmicindent} \textbf{Static parameter:} Public parameter $n$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Input:} The point $K = (X_k : Z_k)$,
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} Initial curve constants $A_{24}^+$, $C_{24}$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Output:} Final curve constants $A_{24}^{+'}$, $C_{24}^{'}$
+    \algrule
+\begin{algorithmic}[1]
+    \For{$e = n-2$ \textbf{ down to $0$ by} $-2$}
+        \State $(X:Z) \gets [2^e]K$
+        \State $(A_{24}^{+'}$, $C_{24}^{'}) \gets 4\_iso\_curve(X:Z)$
+    \EndFor
+    \\
+    \Return $(A_{24}^{+'}$, $C_{24}^{'})$
+\end{algorithmic}
+\label{2n isogeny curve only}
+\end{algorithm}
+%
+%
+%
+%
+%
+\\
+\\
+Algorithm \ref{2n isogeny curve} is a more general variation of Algorithm \ref{2n isogeny curve only} having an elliptic curve point $K$ generating the isogeny's kernel and one additional input, a point $T$. The algorithm has four additional outputs: the images of public points $P$, $Q$, $R=Q-P$ and the image of $T$.
+\\
+The function \textit{4\_iso\_eval} is the same as in SIKE's library and computes the $4$-isogenous \textit{point} $P'$ from a given \textit{point} $P$. Once it is put inside the \textit{for} loop (line 1) it allows to effectively traverse the isogeny path, following a hard-coded traversing strategy, eventually leading to the $2^n$-isogenous point. This function evaluates the image of each output point.
+\begin{algorithm}
+\caption{\textit{get\_2n\_isogenousCurve}}
+    %\algrule
+    \hspace*{\algorithmicindent} \textbf{Static parameter:} Public parameters $n$, $P$, $Q$, $R$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Input:} The point $K = (X_k : Z_k)$, a point $T$
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} Initial curve constants $A_{24}^+$, $C_{24}$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Output:} Final curve constants $A_{24}^{+'}$, $C_{24}^{'}$
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} $\,\;$ Image points $P^{'}$, $Q^{'}$, $R^{'}$, $T^{'}$
+    \algrule
+\begin{algorithmic}[1]
+    \For{$e = n-2$ \textbf{ down to $0$ by} $-2$}
+        \State $(X:Z) \gets [2^e]K$
+        \State $(A_{24}^{+'}$, $C_{24}^{'}) \gets 4\_iso\_curve(X:Z)$
+        \State $P' \gets 4\_iso\_eval(P)$
+        \State $Q' \gets 4\_iso\_eval(Q)$
+        \State $R' \gets 4\_iso\_eval(R)$
+        \State $T' \gets 4\_iso\_eval(T)$
+    \EndFor
+    \\
+    \Return $(A_{24}^{+'}$, $C_{24}^{'})$, $P^{'}$, $Q^{'}$, $R^{'}$, $T^{'}$
+\end{algorithmic}
+\label{2n isogeny curve}
+\end{algorithm}
+%
+%
+%
+%
+%
+\\
+\\
+Algorithm \ref{2n isogeny curve and points} is an even more general variation of Algorithm \ref{2n isogeny curve only}. In this case we input an elliptic curve point $K$ generating the isogeny's kernel and three points $U$, $V$, $W$ that we want to map to the $2^n$-isogenous curve. As before, the functions \textit{4\_iso\_curve} and \textit{4\_iso\_eval} are the same as in SIKE's library and compute the $4$-isogeny originating from a given \textit{curve} and evaluate a $4$-isogenous \textit{point} respectively. 
+\begin{algorithm}
+\caption{\textit{get\_2n\_isogenousCurve\_andPoints}}
+    %\algrule
+    \hspace*{\algorithmicindent} \textbf{Static parameter:} Public parameter $n$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Input:} The isogeny kernel $K = (X_k : Z_k)$, three points $U$, $V$, $W$
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} Initial curve constants $A_{24}^+$, $C_{24}$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Output:} Image points $U^{'}$, $V^{'}$, $W^{'}$
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} $\,\;$ Final curve constants $A_{24}^{+'}$, $C_{24}^{'}$
+    \algrule
+\begin{algorithmic}[1]
+    \For{$e = n-2$ \textbf{ down to $0$ by} $-2$}
+        \State $(X:Z) \gets [2^e]K$
+        \State $(A_{24}^{+'}$, $C_{24}^{'}) \gets 4\_iso\_curve(X:Z)$
+        \State $U' \gets 4\_iso\_eval(U)$
+        \State $V' \gets 4\_iso\_eval(V)$
+        \State $W' \gets 4\_iso\_eval(W)$
+    \EndFor
+    \\
+    \Return $(A_{24}^{+'}$, $C_{24}^{'})$, $U^{'}$, $V^{'}$, $W^{'}$
+\end{algorithmic}
+\label{2n isogeny curve and points}
+\end{algorithm}
+%
+%
+%
+%
+%
+\\
+\\
+Algorithm \ref{3m isogeny curve only} is an analogue of Algorithm \ref{2n isogeny curve only}: it is a lighter implementation of SIKE's \textit{3\_e\_iso} allowing us to compute the curve $3^m$-isogenous to the input curve. Its inputs are the initial curve constants $(A_{24}^+$, $C_{24})$ and an elliptic curve point $K$ generating the isogeny's kernel. In this algorithm we exploit SIKE's functions \textit{xTPLe} (to perform the $[3^m]$ scalar multiplication in line 2) and \textit{3\_iso\_curve} (to compute the curve $3$-isogenous to the input curve).
+\\
+Differently from $2^n$-isogeny functions, this is the only $3^m$-isogeny function we need. %Other variations, as seen in Algorithms \ref{2n isogeny curve} and \ref{2n isogeny curve and points}, can be easily adapted to operate in $3$-isogenies with small changes.
+\begin{algorithm}
+\caption{\textit{get\_3m\_isogenousCurve\_Only}}
+    %\algrule
+    \hspace*{\algorithmicindent} \textbf{Static parameter:} Public parameter $m$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Input:} The point $K = (X_k : Z_k)$,
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} Initial curve constants $A_{24}^+$, $C_{24}$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Output:} Final curve constants $A_{24}^{+'}$, $C_{24}^{'}$
+    \algrule
+\begin{algorithmic}[1]
+    \For{$e = m-1$ \textbf{ down to $0$ by} $-1$}
+        \State $(X:Z) \gets [3^e]K$
+        \State $(A_{24}^{+'}$, $C_{24}^{'}) \gets 3\_iso\_curve(X:Z)$
+    \EndFor
+    \\
+    \Return $(A_{24}^{+'}$, $C_{24}^{'})$
+\end{algorithmic}
+\label{3m isogeny curve only}
+\end{algorithm}
+%
+%
+%
+%
+%
+\\
+\\
+We have shown all the algorithms to perform $2^n$- and $3^m$-isogenies computations and we can now introduce a miscellaneous of algorithms needed in the SIDH-based OT.
+\\
+With Algorithm \ref{linearCombination} we find two random coefficients, namely $x$ and $y$, aiming to compute the linear combination required by Alice in SIDH-based OT. As a note, the \textit{random} function in lines $3$ and $4$ is a generic, uniformly distributed, random integer choosing function. Since Vanessa Vitse in her paper \cite{paper seedot} did not put an upper bound to this random coefficients, neither we did. % but one may consider to put the upper bound to $p$ since we are working on field extensions over $\mathbb{F}_{p^2}$.
+\begin{algorithm}
+\caption{\textit{linearCombination\_Random}}
+    \hspace*{\algorithmicindent} \textbf{Input:} Total number of Alice secrets $s$
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} An array of $2s$ points $B$
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} An array of $s$ points $A$ for comparisons
+    \\
+    \hspace*{\algorithmicindent} \textbf{Output:} An array of $2s$ integers $xy$
+    \algrule
+\begin{algorithmic}[1]
+    \For{$i=0$ \textbf{ up to $s$ by} $+1$}
+        \Do
+            \State xy[$2is$] = random();
+            \State xy[$2is +1$] = random();
+        \doWhile{(A[$i$] $\ne xy[2is] * B[2is] +  xy[2is+1] * B[2is+1]$)}
+    \EndFor
+    \\
+    \Return $xy$
+\end{algorithmic}
+\label{linearCombination}
+\end{algorithm}
+%
+%
+%
+%
+%
+\\
+\\
+Algorithm \ref{enc} encrypts and decrypts a secret string. Firstly we need a key derivation function (KDF) which takes a curve's j-invariant as seed and returns an encryption key. Secondly, and lastly, we use the KDF's key to encrypt our input secret via a simple bitwise XOR operation. For the KDF we chose the \textit{shake256} function from the NIST publication \cite{sha3} regarding SHA3. The final output is an encrypted string.
+\\
+Thanks to the bitwise XOR, we are able to decrypt a given string by providing the same j-invariant used to encrypt to our function hence making it symmetric and avoiding the issue of implementing a different decrypting algorithm. Note that we are not using a one-time-pad encryption algorithm. The encryption key $k$ is longer than Alice's \textit{secret} hence it is trimmed to match the \textit{secret}'s length.  
+\begin{algorithm}
+\caption{\textit{Enc}}
+    \hspace*{\algorithmicindent} \textbf{Input:} A \textit{secret} string
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} A curve's j-invariant $j$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Output:} The encrypted secret \textit{out}
+    \algrule
+\begin{algorithmic}[1]
+    \State $k = $ \textit{shake256(j)}
+    \State \textit{out} $= $ \textit{secret XOR k}
+    \\
+    \Return \textit{out}
+\end{algorithmic}
+\label{enc}
+\end{algorithm}
+%
+%
+%
+%%
+%
+\\
+\\
+Other functions used in our implementation implement:
+\begin{itemize}
+    \item a \textit{simple point multiplication} by a scalar. %This was due to SIKE's library optimised to compute a point multiplication followed by an addition. 
+    In order to speed up our code we opted to implement a standard Montgomery Ladder following the pseudo-code in \cite{mont lad};
+    %
+    \item the \textit{point addition} in both affine and projective coordinates;
+    %
+    \item the \textit{point difference} because many operations in SIKE are optimised to work on differential additions, requiring an ad-hoc function to compute the opposite of a point and then add it to another point via a point addition;
+    %
+    \item a function to compute the \textit{projective $Y$ coordinate} from a point $P=(X:Z)$ on a Montgomery curve with coefficient $A$. The reason for this function comes from compatibility issues arising for the many formats to represent elliptic-curve points used in SIKE. In particular we run this function when we have a point represented in projective short form $(X:Z)$ but we need the full $(X:Y:Z)$ projective form. The projective $Y$ coordinate can be easily computed from the curve equation (in particular from the coefficient $A$) and from the short form $(X:Z)$ of $P$;
+    %
+    \item a function to convert an elliptic curve affine point $P=(x, y)$ to its projective short form $P=(X:Z)$ simply by assigning the values $X=x$ and $Z=1$;
+    %
+    \item a function analogous to the above but used to convert an elliptic curve affine point $P=(x, y)$ to its projective full form $P=(X:Y:Z)$. This operation is done by assigning the values $X=x$, $Y=y$ and $Z=1$;
+    %
+    \item a function to convert the projective form of an elliptic curve point $P=(X:Y:Z)$ to its short form simply by discarding the $Y$ coordinate;
+    %
+    \item a function to generate an elliptic curve $2^n$-order basis by exploiting SIKE's \textit{get\_2\_torsion\_ entangled\_basis\_compression} function and a conversion function to obtain the basis in projective (short) form;
+    %
+    \item a function to compute the Weil pairing of order $2^n$ by exploiting SIKE's \textit{Tate\_pairings\_2\_torsion} function and the optimisation discussed in Section \ref{sec weil ottimizzato}. By coupling these two ingredients we were able to obtain only two output values hence reducing enormously space and time complexities.
+\end{itemize}
+%
+%
+%
+%
+%
+%%
+%
+%
+%
+%
+%
+%
+%
+%generate_2n_entangledBasis
+%compute_Tate_Order2n
+%Enc
+%
+%
+%
+%
+%
+\subsubsection{Unused algorithms}
+Even though the following algorithms are no longer used in our SIDH-based OT current implementation, we considered important to describe them since they could be helpful in future developments.
+\\
+Algorithm \ref{torsion points} generates a pair of elliptic curve points $(T_1, T_2)$ having order $2^n$. It also performs a cross-multiplication and the other checks, described in Section \ref{sec weil ottimizzato}, to confirm the points have the desired order.
+\\
+Some inputs are not explicitly used but they are required in mandatory sub-functions: input $A$ is used in lines $3$ and $5$ to compute the SIKE's \textit{LADDER3PT}; inputs $A_{24}^+$ and $C_{24}$, are used in lines $11$ and $12$ in SIKE's function \textit{xDBLe}.
+\begin{algorithm}
+\caption{\textit{generate\_2n\_torsionPoints}}
+    %\algrule
+    \hspace*{\algorithmicindent} \textbf{Input:} Two linearly independent elliptic curve points $P$, $Q$ of order $2^n$,
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} a point representing their difference $Q-P$, 
+    \\
+    \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} \hspace*{\algorithmicindent} Montgomery curve constants $A_{24}^+$, $C_{24}$, $A$
+    \\
+    \hspace*{\algorithmicindent} \textbf{Output:} Two elliptic curve points $T_1$, $T_2$ of order $2^n$
+    \algrule
+\begin{algorithmic}[1]
+    \Do
+        \State $k_1 \gets \textit{random chosen in } \{0, \,\ldots,\, 2^{n-1} -1\}$
+        \State $T_1 \gets P + [2k_1]Q$
+        \State $k_2 \gets \textit{random chosen in } \{0, \,\ldots,\, 2^{n-1} -1\}$
+        \State $T_2 \gets P + [2k_2]Q$
+        %
+        \NoNumber{}
+        %
+        \State $X_1 \gets X\textit{-coordinate of } [2^{n-2}]T_1$
+        \State $X_2 \gets X\textit{-coordinate of } [2^{n-2}]T_2$
+        \State $Z_1 \gets Z\textit{-coordinate of } [2^{n-2}]T_1$
+        \State $Z_2 \gets Z\textit{-coordinate of } [2^{n-2}]T_2$
+        %
+        \NoNumber{}
+        %
+        \State $linearDependent \gets X_1Z_2 = X_2Z_1$ 
+        \State $T1\_notFullOrder \gets ([2^{n-1}]T_1 \ne \mathcal{O}) \, and \, ([2^{n}]T_1 = \mathcal{O})$
+        \State $T2\_notFullOrder \gets ([2^{n-1}]T_2 \ne \mathcal{O}) \, and \, ([2^{n}]T_2 = \mathcal{O})$ 
+    \doWhile{(linearDependent or T1\_notFullOrder or T2\_notFullOrder)} 
+    \\
+    \Return $T_1, T_2$
+\end{algorithmic}
+\label{torsion points}
+\end{algorithm}
+%
+%
+%
+%
+%
+\\
+\\
+Lastly, a function enabling to convert a point $M=(X:Y:Z)$ on a Montgomery curve with coefficient $A$, to a point $W$ on a Weierstrass elliptic curve has been considered. The algorithm simply computes and returns $W=(X/A:Y:1)$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%\chapter{seconda appendice}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\end{document}
